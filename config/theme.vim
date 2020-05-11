@@ -6,10 +6,11 @@
 function! s:theme_init()
 	" Load cached colorscheme or hybrid by default
 	let l:default = 'hybrid'
+	let l:background = 'dark'
 	let l:cache = s:theme_cache_file()
 	if ! exists('g:colors_name')
-		set background=dark
-		let l:scheme = filereadable(l:cache) ? readfile(l:cache)[0] : l:default
+		let &background = s:theme_cached_background(l:background)
+		let l:scheme = s:theme_cached_scheme(l:default)
 		silent! execute 'colorscheme' l:scheme
 	endif
 endfunction
@@ -20,8 +21,13 @@ function! s:theme_autoload()
 		if filereadable(theme_path)
 			execute 'source' fnameescape(theme_path)
 		endif
-		" Persist theme
-		call writefile([g:colors_name], s:theme_cache_file())
+	endif
+	call s:persist_theme()
+endfunction
+
+function! s:persist_theme()
+	if exists('g:colors_name') && exists('&background')
+		call writefile([g:colors_name, &background], s:theme_cache_file())
 	endif
 endfunction
 
@@ -32,6 +38,11 @@ endfunction
 function! s:theme_cached_scheme(default)
 	let l:cache_file = s:theme_cache_file()
 	return filereadable(l:cache_file) ? readfile(l:cache_file)[0] : a:default
+endfunction
+
+function! s:theme_cached_background(default)
+	let l:cache_file = s:theme_cache_file()
+	return filereadable(l:cache_file) ? readfile(l:cache_file)[1] : a:default
 endfunction
 
 function! s:theme_cleanup()

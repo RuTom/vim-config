@@ -44,6 +44,14 @@ if dein#tap('vim-clap')
 	endfunction
 endif
 
+if dein#tap('vim-tmux-navigator')
+	nnoremap <silent> <M-h> :TmuxNavigateLeft<cr>
+	nnoremap <silent> <M-j> :TmuxNavigateDown<cr>
+	nnoremap <silent> <M-k> :TmuxNavigateUp<cr>
+	nnoremap <silent> <M-l> :TmuxNavigateRight<cr>
+	nnoremap <silent> <M-\> :TmuxNavigatePrevious<cr>
+endif
+
 if dein#tap('denite.nvim')
 	nnoremap <silent><LocalLeader>r :<C-u>Denite -resume -refresh -no-start-filter<CR>
 	nnoremap <silent><LocalLeader>f :<C-u>Denite file/rec<CR>

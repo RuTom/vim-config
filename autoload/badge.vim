@@ -2,7 +2,7 @@
 " Maintainer: Rafael Bodill <justrafi at gmail dot com>
 "-------------------------------------------------
 
-" Configuration
+" Configuration {{{1
 
 " Limit display of directories in path
 let g:badge_tab_filename_max_dirs =
@@ -36,7 +36,9 @@ let g:badge_loading_charset =
 
 let g:badge_nofile = get(g:, 'badge_nofile', 'N/A')
 
-let g:badge_project_separator = get(g:, 'badge_project_separator', '')
+let g:badge_project_separator = get(g:, 'badge_project_separator', '|')
+
+" Setup {{{1
 
 " Clear cache on save
 augroup statusline_cache
@@ -46,14 +48,16 @@ augroup statusline_cache
 		\ unlet! b:badge_cache_filename b:badge_cache_tab
 augroup END
 
-function! badge#project() abort
+" Functions {{{1
+
+function! badge#project() abort " {{{2
 	" Try to guess the project's name
 
 	let dir = badge#root()
 	return fnamemodify(dir ? dir : getcwd(), ':t')
 endfunction
 
-function! badge#gitstatus(...) abort
+function! badge#gitstatus(...) abort " {{{2
 	" Display git status indicators
 
 	let l:icons = ['₊', '∗', '₋']  " added, modified, removed
@@ -79,7 +83,7 @@ function! badge#gitstatus(...) abort
 	return trim(l:out)
 endfunction
 
-function! badge#filename(...) abort
+function! badge#filename(...) abort " {{{2
 	" Provides relative path with limited characters in each directory name, and
 	" limits number of total directories. Caches the result for current buffer.
 	" Parameters:
@@ -108,9 +112,11 @@ function! badge#filename(...) abort
 	let l:bufname = bufname(l:bufnr)
 	let l:filetype = getbufvar(l:bufnr, '&filetype')
 
-	if a:0 < 2 && l:filetype =~? g:badge_filetype_blacklist
+	if a:0 < 2 && l:filetype =~? g:badge_filetype_blacklist && !( l:filetype ==# 'help' )
 		" Empty if owned by certain plugins
 		let l:fn = ''
+	elseif a:0 < 2 && l:filetype ==# 'help'
+		let l:fn = expand('%:t')
 	elseif a:0 < 2 && l:filetype ==# 'defx'
 		let l:defx = getbufvar(l:bufnr, 'defx')
 		let l:fn = get(get(l:defx, 'context', {}), 'buffer_name')
@@ -170,7 +176,17 @@ function! badge#filename(...) abort
 	return l:fn
 endfunction
 
-function! badge#root() abort
+function! badge#filesize(...) abort " {{{2
+	" Return filesize in human readable form or bytes if called with an argument
+
+	let fsize = line2byte('$') + len(getline('$'))
+	if a:0 > 0
+		return winwidth(0) > 70 ? fsize : ''
+	endif
+	return winwidth(0) > 70 ? s:humansize(fsize) : ''
+endfunction
+
+function! badge#root() abort " {{{2
 	" Find the root directory by searching for the version-control dir
 
 	let dir = getbufvar('%', 'project_dir')
@@ -192,7 +208,7 @@ function! badge#root() abort
 	return dir
 endfunction
 
-function! badge#branch() abort
+function! badge#branch() abort " {{{2
 	" Returns git branch name, using different plugins.
 
 	if &filetype !~? g:badge_filetype_blacklist
@@ -207,7 +223,7 @@ function! badge#branch() abort
 	return ''
 endfunction
 
-function! badge#syntax() abort
+function! badge#syntax() abort " {{{2
 	" Returns syntax warnings from several plugins (ALE, Neomake, Syntastic)
 	if &filetype =~? g:badge_filetype_blacklist
 		return ''
@@ -236,7 +252,7 @@ function! badge#syntax() abort
 	return substitute(l:msg, '\s*$', '', '')
 endfunction
 
-function! badge#trails(...) abort
+function! badge#trails(...) abort " {{{2
 	" Detect trailing whitespace and cache result per buffer
 	" Parameters:
 	"   Whitespace warning message, use %s for line number, default: WS:%s
@@ -254,7 +270,7 @@ function! badge#trails(...) abort
 	return b:badge_cache_trails
 endfunction
 
-function! badge#modified(...) abort
+function! badge#modified(...) abort " {{{2
 	" Make sure we ignore &modified when choosewin is active
 	" Parameters:
 	"   Modified symbol, default: +
@@ -264,7 +280,7 @@ function! badge#modified(...) abort
 	return &modified && ! choosewin ? label : ''
 endfunction
 
-function! badge#mode(...) abort
+function! badge#windowmode(...) abort " {{{2
 	" Returns file's mode: read-only and/or zoomed
 	" Parameters:
 	"   Read-only symbol, default: R
@@ -281,13 +297,32 @@ function! badge#mode(...) abort
 	return s:modes
 endfunction
 
-function! badge#format() abort
+function! badge#format() abort " {{{2
 	" Returns file format
 
-	return &filetype =~? g:badge_filetype_blacklist ? '' : &fileformat
+	if &filetype=~? g:badge_filetype_blacklist
+		return ''
+	endif
+	return winwidth(0) > 70 ? ((&fenc !=# '' ? &fenc : &enc) . '[' . &ff . ']') : ''
 endfunction
 
-function! badge#session(...) abort
+function! badge#filenamemod() abort " {{{2
+	" Returns filename and modified symbol if file has been modified
+
+	return badge#filename() . (&modified ? (' ' . badge#modified()): '')
+endfunction
+
+function! badge#filetype() abort " {{{2
+	" Returns filetype with devicons symbol if plugin is present
+
+	let ftsymbol = ''
+	if exists('*WebDevIconsGetFileTypeSymbol()')
+		let ftsymbol = ' ' . WebDevIconsGetFileTypeSymbol()
+	endif
+	return strlen(&filetype) ? &filetype . ftsymbol : 'no ft'
+endfunction
+
+function! badge#session(...) abort " {{{2
 	" Returns an indicator for active session
 	" Parameters:
 	"   Active session symbol, default: [S]
@@ -295,7 +330,7 @@ function! badge#session(...) abort
 	return empty(v:this_session) ? '' : a:0 == 1 ? a:1 : '[S]'
 endfunction
 
-function! badge#indexing() abort
+function! badge#indexing() abort " {{{2
 	let l:out = ''
 
 	if exists('*gutentags#statusline')
@@ -318,7 +353,7 @@ function! badge#indexing() abort
 	return l:out
 endfunction
 
-function! s:numtr(number, charset) abort
+function! s:numtr(number, charset) abort " {{{2
 	let l:result = ''
 	for l:char in split(a:number, '\zs')
 		let l:result .= a:charset[l:char]
@@ -326,4 +361,20 @@ function! s:numtr(number, charset) abort
 	return l:result
 endfunction
 
-" vim: set ts=2 sw=2 tw=80 noet :
+function! s:humansize(bytes) abort " {{{2
+	" Returns byte size in human readable form (B, KiB, MiB, GiB)
+
+	let l:bytes = a:bytes
+	let l:sizes = ['B', 'KiB', 'MiB', 'GiB']
+	let l:i = 0
+	while l:bytes >= 1024
+		let l:bytes = l:bytes / 1024.0
+		let l:i += 1
+	endwhile
+	return printf('%.1f%s', l:bytes, l:sizes[l:i])
+endfunction
+
+" }}}
+" }}}
+
+" vim: set ts=2 sw=2 tw=80 noet fdm=marker :

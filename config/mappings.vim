@@ -1,7 +1,7 @@
 " Key-mappings
 " ===
 
-" Elite-mode {{{
+" Elite-mode {{{1
 " ----------
 if get(g:, 'elite_mode')
 
@@ -13,8 +13,7 @@ if get(g:, 'elite_mode')
 
 endif
 
-" }}}
-" Navigation {{{
+" Navigation {{{1
 " ----------
 
 " Fix keybind name for Ctrl+Space
@@ -56,8 +55,7 @@ cnoremap <C-l> <End>
 cnoremap <C-f> <Right>
 cnoremap <C-b> <Left>
 
-" }}}
-" Scroll {{{
+" Scroll {{{1
 " ------
 
 nnoremap zl z4l
@@ -73,8 +71,7 @@ nnoremap zh z4h
 " noremap <expr> <C-e> (line("w$") >= line('$') ? "j" : "3\<C-e>")
 " noremap <expr> <C-y> (line("w0") <= 1         ? "k" : "3\<C-y>")
 
-" }}}
-" Clipboard {{{
+" Clipboard {{{1
 " ---------
 
 " Yank from cursor position to end-of-line
@@ -88,8 +85,7 @@ nnoremap <Leader>Y :let @+=expand("%:p")<CR>:echo 'Yanked absolute path'<CR>
 " xnoremap p  "0p
 " nnoremap x "_x
 
-" }}}
-" Edit {{{
+" Edit {{{1
 " ----
 
 " Macros
@@ -97,7 +93,7 @@ nnoremap Q q
 nnoremap gQ @q
 
 " Start new line from any cursor position in insert-mode
-inoremap <S-Return> <C-o>o
+inoremap <S-Return> <C-o>:<C-u>silent put =nr2char(10)<CR>
 
 " Deletes selection and start insert mode
 " vnoremap <BS> "_xi
@@ -115,10 +111,14 @@ nmap >>  >>_
 nmap <<  <<_
 
 " Drag current line/s vertically and auto-indent
-nnoremap <Leader>k :m-2<CR>
-nnoremap <Leader>j :m+<CR>
-vnoremap <Leader>k :m'<-2<CR>gv=gv
-vnoremap <Leader>j :m'>+<CR>gv=gv
+nnoremap <silent>[e  :<C-u>execute 'move --'. v:count1<cr>gv=gv
+nnoremap <silent>]e  :<C-u>execute 'move +'. v:count1<cr>gv=gv
+vnoremap <silent>[e  :<C-u>execute "'<,'>move'<--". v:count1<cr>gv=gv
+vnoremap <silent>]e  :<C-u>execute "'<,'>move'>+". v:count1<cr>gv=gv
+
+" Insert newline from normal mode
+nnoremap <silent>[<Space>  :<C-u>silent put! =repeat(nr2char(10), v:count1)<cr>
+nnoremap <silent>]<Space>  :<C-u>silent put =repeat(nr2char(10), v:count1)<cr>
 
 " Duplicate lines
 nnoremap <Leader>d m`YP``
@@ -138,8 +138,7 @@ nnoremap <Leader>cp yap<S-}>p
 " Remove spaces at the end of lines
 nnoremap <Leader>cw :<C-u>silent! keeppatterns %substitute/\s\+$//e<CR>
 
-" }}}
-" Search & Replace {{{
+" Search & Replace {{{1
 " ----------------
 
 " Use backspace key for matching parens
@@ -164,22 +163,32 @@ xnoremap sg :s//gc<Left><Left><Left>
 xnoremap <C-r> :<C-u>call <SID>get_selection('/')<CR>:%s/\V<C-R>=@/<CR>//gc<Left><Left><Left>
 
 " Returns visually selected text
-function! s:get_selection(cmdtype) "{{{
+function! s:get_selection(cmdtype) "{{{2
 	let temp = @s
 	normal! gv"sy
 	let @/ = substitute(escape(@s, '\'.a:cmdtype), '\n', '\\n', 'g')
 	let @s = temp
 endfunction "}}}
 
-" }}}
-" Command & History {{{
+" Command & History {{{1
 " -----------------
 
 " Start an external command with a single bang
 nnoremap ! :!
 
 " Put vim command output into buffer
-nnoremap g! :<C-u>put=execute('')<Left><Left>
+nnoremap g! :<C-u>call <SID>readcommand()<CR>
+
+function! s:readcommand() abort " {{{2
+	call inputsave()
+	let com = input('r:', '', 'command')
+	call inputrestore()
+	if com != '' && confirm("Append the result of: '" . com . "'?")
+		try
+			put =execute(com)
+		endtry
+	endif
+endfunction " }}}
 
 " Allow misspellings
 cnoreabbrev qw wq
@@ -195,8 +204,7 @@ cnoremap <expr> <C-n>  pumvisible() ? "\<C-n>" : "\<Down>"
 cnoremap <Up>   <C-p>
 cnoremap <Down> <C-n>
 
-" }}}
-" File operations {{{
+" File operations {{{1
 " ---------------
 
 " Switch (window) to the directory of the current opened buffer
@@ -212,8 +220,7 @@ nnoremap <C-s> :<C-u>write<CR>
 xnoremap <C-s> :<C-u>write<CR>
 cnoremap <C-s> <C-u>write<CR>
 
-" }}}
-" Editor UI {{{
+" Editor UI {{{1
 " ---------
 
 " Toggle editor's visual effects
@@ -223,30 +230,24 @@ nmap <Leader>tl :setlocal nolist!<CR>
 nmap <Leader>th :nohlsearch<CR>
 
 " Smart wrap toggle (breakindent and colorcolumn toggle as-well)
-nmap <Leader>tw :execute('setlocal wrap! breakindent! colorcolumn=' .
+nmap <silent><Leader>tw :execute('setlocal wrap! breakindent! colorcolumn=' .
 	\ (&colorcolumn == '' ? &textwidth : ''))<CR>
 
 " Tabs
-nnoremap <silent> g1 :<C-u>tabfirst<CR>
-nnoremap <silent> g5 :<C-u>tabprevious<CR>
-nnoremap <silent> g9 :<C-u>tablast<CR>
 nnoremap <silent> <C-Tab> :<C-U>tabnext<CR>
 nnoremap <silent> <C-S-Tab> :<C-U>tabprevious<CR>
-nnoremap <silent> <A-j> :<C-U>tabnext<CR>
-nnoremap <silent> <A-k> :<C-U>tabprevious<CR>
 nnoremap <silent> <A-{> :<C-u>-tabmove<CR>
 nnoremap <silent> <A-}> :<C-u>+tabmove<CR>
-" nnoremap <silent> <A-[> :<C-u>tabprevious<CR>
-" nnoremap <silent> <A-]> :<C-u>tabnext<CR>
+nnoremap <silent> <A-[> :<C-u>tabprevious<CR>
+nnoremap <silent> <A-]> :<C-u>tabnext<CR>
 
 " Show vim syntax highlight groups for character under cursor
-nmap <silent> <Leader>h
-	\ :echo 'hi<'.synIDattr(synID(line('.'), col('.'), 1), 'name')
-	\ . '> trans<'.synIDattr(synID(line('.'), col('.'), 0), 'name') . '> lo<'
-	\ . synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name') . '>'<CR>
+" nmap <silent> <Leader>h
+"	\ :echo 'hi<'.synIDattr(synID(line('.'), col('.'), 1), 'name')
+"	\ . '> trans<'.synIDattr(synID(line('.'), col('.'), 0), 'name') . '> lo<'
+"	\ . synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name') . '>'<CR>
 
-" }}}
-" Custom Tools {{{
+" Custom Tools {{{1
 " ------------
 
 " Source line and selection in vim
@@ -266,31 +267,26 @@ nmap <Leader>sl :<C-u>SessionLoad<CR>
 nmap <Leader>o :<C-u>OpenSCM<CR>
 vmap <Leader>o :OpenSCM<CR>
 
-if has('mac')
-	" Open the macOS dictionary on current word
-	nmap <Leader>? :!open dict://<cword><CR>
-
-	" Use Marked for real-time Markdown preview
-	"
-	if executable('/Applications/Marked 2.app/Contents/MacOS/Marked 2')
-		autocmd user_events FileType markdown
-			\ nmap <buffer><Leader>P :silent !open -a Marked\ 2.app '%:p'<CR>
-	endif
-endif
-
 nnoremap <silent> <Leader>ml :call <SID>append_modeline()<CR>
 
 " Append modeline after last line in buffer
 " See: http://vim.wikia.com/wiki/Modeline_magic
-function! s:append_modeline() "{{{
-	let l:modeline = printf(' vim: set ts=%d sw=%d tw=%d %set :',
+function! s:append_modeline() abort "{{{2
+	let l:modeline = printf(' vim: set ts=%d sw=%d tw=%d %set ',
 				\ &tabstop, &shiftwidth, &textwidth, &expandtab ? '' : 'no')
+	if &foldmethod != 'manual' && &foldmethod != 'expr'
+		if &foldmarker != '{{{,}}}' && &foldmethod == 'marker'
+			let l:modeline .= printf('fdm=marker fmr=%s ', &foldmarker)
+		else
+			let l:modeline .= printf('fdm=%s ', &foldmethod)
+		endif
+	endif
+	let l:modeline .= printf('ft=%s :', &filetype)
 	let l:modeline = substitute(&commentstring, '%s', l:modeline, '')
 	call append(line('$'), l:modeline)
 endfunction "}}}
 
-" }}}
-" Windows, buffers and tabs {{{
+" Windows, buffers and tabs {{{1
 " -------------------------
 
 " Ultimatus Quitos
@@ -318,12 +314,10 @@ nnoremap <silent> [Window]x  :<C-u>call <SID>window_empty_buffer()<CR>
 nnoremap <silent> [Window]sv :split<CR>:wincmd p<CR>:e#<CR>
 nnoremap <silent> [Window]sg :vsplit<CR>:wincmd p<CR>:e#<CR>
 
-" Background dark/light toggle and contrasts
+" Background dark/light toggle
 nmap <silent> [Window]h :<C-u>call <SID>toggle_background()<CR>
-nmap <silent> [Window]- :<c-u>call <SID>toggle_contrast(-v:count1)<cr>
-nmap <silent> [Window]= :<c-u>call <SID>toggle_contrast(+v:count1)<cr>
 
-function! s:toggle_background()
+function! s:toggle_background() abort "{{{2
 	if ! exists('g:colors_name')
 		echomsg 'No colorscheme set'
 		return
@@ -345,28 +339,15 @@ function! s:toggle_background()
 			echo 'Set colorscheme to '.&background.' mode'
 		endif
 	endif
-endfunction
+endfunction "}}}
 
-function! s:toggle_contrast(delta)
-	let l:scheme = ''
-	if g:colors_name =~# 'solarized8'
-		let l:schemes = map(['_low', '_flat', '', '_high'],
-			\ '"solarized8_".(&background).v:val')
-		let l:contrast = ((a:delta + index(l:schemes, g:colors_name)) % 4 + 4) % 4
-		let l:scheme = l:schemes[l:contrast]
-	endif
-	if l:scheme !=# ''
-		execute 'colorscheme' l:scheme
-	endif
-endfunction
-
-function! s:window_empty_buffer()
+function! s:window_empty_buffer() "{{{2
 	let l:current = bufnr('%')
 	if ! getbufvar(l:current, '&modified')
 		enew
 		silent! execute 'bdelete '.l:current
 	endif
-endfunction
+endfunction "}}}
 " }}}
 
 " vim: set foldmethod=marker ts=2 sw=2 tw=80 noet :

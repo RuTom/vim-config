@@ -1,7 +1,7 @@
 " Neo/vim Settings
 " ===
 
-" General {{{
+" General {{{1
 set mouse=nv                 " Disable mouse in command-line mode
 set modeline                 " automatically setting options from modelines
 set report=0                 " Don't report on line changes
@@ -30,27 +30,7 @@ endif
 set viewoptions=folds,cursor,curdir,slash,unix
 set sessionoptions=curdir,help,tabpages,winsize
 
-if has('mac') && has('vim_starting')
-	let g:clipboard = {
-		\   'name': 'macOS-clipboard',
-		\   'copy': {
-		\      '+': 'pbcopy',
-		\      '*': 'pbcopy',
-		\    },
-		\   'paste': {
-		\      '+': 'pbpaste',
-		\      '*': 'pbpaste',
-		\   },
-		\   'cache_enabled': 0,
-		\ }
-endif
-
-if has('clipboard') && has('vim_starting')
-	set clipboard& clipboard+=unnamedplus
-endif
-
-" }}}
-" Wildmenu {{{
+" Wildmenu {{{1
 " --------
 if has('wildmenu')
 	if ! has('nvim')
@@ -73,8 +53,7 @@ if has('wildmenu')
 	set wildcharm=<C-z>  " substitue for 'wildchar' (<Tab>) in macros
 endif
 
-" }}}
-" Vim Directories {{{
+" Vim Directories {{{1
 " ---------------
 set undofile swapfile nobackup
 set directory=$DATA_PATH/swap//,$DATA_PATH,~/tmp,/var/tmp,/tmp
@@ -119,7 +98,7 @@ endif
 
 " Secure sensitive information, disable backup files in temp directories
 if exists('&backupskip')
-	set backupskip+=/tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*,/private/var/*
+	set backupskip+=/tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*,/private/*
 	set backupskip+=.vault.vim
 endif
 
@@ -131,8 +110,7 @@ augroup user_secure
 		\ setlocal noswapfile noundofile nobackup nowritebackup viminfo= shada=
 augroup END
 
-" }}}
-" Tabs and Indents {{{
+" Tabs and Indents {{{1
 " ----------------
 set textwidth=80    " Text width maximum chars before wrapping
 set noexpandtab     " Don't expand tabs to spaces
@@ -148,8 +126,7 @@ if exists('&breakindent')
 	set breakindentopt=shift:2,min:20
 endif
 
-" }}}
-" Timing {{{
+" Timing {{{1
 " ------
 set timeout ttimeout
 set timeoutlen=500   " Time out on mappings
@@ -157,8 +134,7 @@ set ttimeoutlen=10   " Time out on key codes
 set updatetime=200   " Idle time to write swap and trigger CursorHold
 set redrawtime=1500  " Time in milliseconds for stopping display redraw
 
-" }}}
-" Searching {{{
+" Searching {{{1
 " ---------
 set ignorecase    " Search ignoring case
 set smartcase     " Keep case when searching with *
@@ -180,8 +156,7 @@ elseif executable('ag')
 	let &grepprg = 'ag --vimgrep' . (&smartcase ? ' --smart-case' : '')
 endif
 
-" }}}
-" Behavior {{{
+" Behavior {{{1
 " --------
 set nowrap                      " No wrap by default
 set linebreak                   " Break long lines at 'breakat'
@@ -210,14 +185,14 @@ if has('patch-8.1.0360') || has('nvim-0.4')
 	" set diffopt=indent-heuristic,algorithm:patience
 endif
 
-" }}}
-" Editor UI {{{
+" Editor UI {{{1
 " --------------------
 set noshowmode          " Don't show mode in cmd window
 set shortmess=aoOTI     " Shorten messages and don't show intro
 set scrolloff=2         " Keep at least 2 lines above/below
 set sidescrolloff=5     " Keep at least 5 lines left/right
-set nonumber            " Don't show line numbers
+set number              " Show line numbers
+set relativenumber      " Show relative line numbers
 set noruler             " Disable default status ruler
 set list                " Show hidden characters
 
@@ -235,7 +210,7 @@ set cmdheight=2         " Height of the command line
 set cmdwinheight=5      " Command-line lines
 set noequalalways       " Don't resize windows on split or close
 set laststatus=2        " Always show a status line
-set colorcolumn=+0      " Column highlight at textwidth's max character-limit
+set colorcolumn=+1      " Column highlight at textwidth's max character-limit
 set display=lastline
 
 if has('folding') && has('vim_starting')
@@ -253,7 +228,7 @@ endif
 " UI Symbols
 " icons:  ▏│ ¦ ╎ ┆ ⋮ ⦙ ┊ 
 let &showbreak='↳  '
-set listchars=tab:\▏\ ,extends:⟫,precedes:⟪,nbsp:␣,trail:·
+set listchars=tab:\│\ ,extends:⟫,precedes:⟪,nbsp:␣,trail:·
 " set fillchars=foldopen:O,foldclose:x
 " set fillchars=vert:▉,fold:─
 
@@ -286,6 +261,19 @@ if &termguicolors
 	endif
 endif
 
+" create directory for savepath if it doesn't exist
+function s:MkNonExDir(file, buf)
+	if empty(getbufvar(a:buf, '&buftype')) && a:file!~#'\v^\w+\:\/'
+		let dir=fnamemodify(a:file, ':h')
+		if !isdirectory(dir)
+			call mkdir(dir, 'p')
+		endif
+	endif
+endfunction
+augroup BWCCreateDir
+	autocmd!
+	autocmd BufWritePre * :call s:MkNonExDir(expand('<afile>'), +expand('<abuf>'))
+augroup END
 " }}}
 
 " vim: set foldmethod=marker ts=2 sw=2 tw=80 noet :

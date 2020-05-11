@@ -6,7 +6,15 @@
 # Startup
 # -------
 - repo: Shougo/dein.vim
-- repo: itchyny/vim-gitbranch
+
+- repo: itchyny/lightline.vim
+  hook_source: source $VIM_PATH/config/plugins/lightline.vim
+- { repo: itchyny/vim-gitbranch, depends: lightline }
+- { repo: maximbaz/lightline-ale, depends: lightline }
+- { repo: mengelbrecht/lightline-bufferline, depends: lightline }
+
+- repo: ryanoasis/vim-devicons
+
 - repo: itchyny/vim-parenmatch
 - repo: thinca/vim-localrc
 - repo: romainl/vim-cool
@@ -20,6 +28,7 @@
 
 - repo: christoomey/vim-tmux-navigator
   if: "! (has('win32') || has('win64'))"
+  hook_add: let g:tmux_navigator_no_mappings = 1
 
 - repo: tpope/vim-sleuth
   hook_add: let g:sleuth_neighbor_limit = 5
@@ -293,15 +302,6 @@
   on_cmd: [ Files, GitFiles, Buffers, Lines, Locate, Colors, Ag, Rg, Tags ]
   on_func: [ fzf#vim#with_preview, fzf#run, vista#finder#fzf#Run ]
 
-- repo: Ron89/thesaurus_query.vim
-  on_cmd:
-    - Thesaurus
-    - ThesaurusQueryReplaceCurrentWord
-    - ThesaurusQueryLookupCurrentWord
-  hook_add: |
-    let g:tq_map_keys = 0
-    let g:tq_use_vim_autocomplete = 0
-
 # ==========================================
 # Interface
 # ---------
@@ -395,33 +395,6 @@
 - repo: junegunn/limelight.vim
   on_cmd: Limelight
 
-- repo: itchyny/calendar.vim
-  on_cmd: Calendar
-  hook_source: |
-    let g:calendar_google_calendar = 1
-    let g:calendar_google_task = 1
-
-- repo: vimwiki/vimwiki
-  on_map: { n: <Plug> }
-  on_cmd: [ VimwikiIndex, VimwikiUISelect ]
-  hook_add: |
-    let g:vimwiki_use_calendar = 1
-    let g:vimwiki_hl_headers = 1
-    let g:vimwiki_hl_cb_checked = 1
-    let g:vimwiki_autowriteall = 0
-  hook_source: |
-    let g:vimwiki_list = [
-    \   { 'diary_header': 'Diary',
-    \     'diary_link_fmt': '%Y-%m/%d',
-    \     'auto_toc': 1,
-    \     'path': '~/docs/wiki/',
-    \     'syntax': 'markdown',
-    \     'ext': '.md' },
-    \   { 'path': '~/docs/books/',
-    \     'syntax': 'markdown',
-    \     'ext': '.md' }
-    \ ]
-
 # ==========================================
 # Completion and code analysis
 # ----------
@@ -430,7 +403,9 @@
 
 - repo: prabirshrestha/asyncomplete.vim
   depends: async.vim
-  hook_add: let g:asyncomplete_auto_completeopt = 0
+  hook_add: |
+    let g:asyncomplete_auto_completeopt = 0
+    let g:asyncomplete_auto_popup = 0
   hook_source: source $VIM_PATH/config/plugins/asyncomplete.vim
 
 - repo: prabirshrestha/asyncomplete-lsp.vim
@@ -543,7 +518,7 @@
     let g:ale_echo_msg_format = '%linter%: %code: %%s [%severity%]'
     let g:ale_history_enabled = 0
     let g:ale_sign_error = '✖'
-    let g:ale_sign_warning = 'ⁱ'
+    let g:ale_sign_warning = '!'
     let g:ale_maximum_file_size = 500000
 
 - repo: mattn/emmet-vim

@@ -77,14 +77,13 @@ augroup user_plugin_filetype " {{{
 
 augroup END " }}}
 
-" Internal Plugin Settings  {{{
+" Internal Plugin Settings  {{{1
 " ------------------------
 
-" PHP {{{
+" PHP {{{2
 let g:PHP_removeCRwhenUnix = 0
 
-" }}}
-" Python {{{
+" Python {{{2
 let g:python_highlight_all = 1
 " let g:python_highlight_builtins = 1
 " let g:python_highlight_exceptions = 1
@@ -93,17 +92,14 @@ let g:python_highlight_all = 1
 " let g:python_highlight_class_vars = 1
 " let g:python_highlight_operators = 1
 
-" }}}
-" Vim {{{
+" Vim {{{2
 let g:vimsyntax_noerror = 1
 let g:vim_indent_cont = &shiftwidth
 
-" }}}
-" Bash {{{
+" Bash {{{2
 let g:is_bash = 1
 
-" }}}
-" Java {{{
+" Java {{{2
 let g:java_highlight_functions = 'style'
 let g:java_highlight_all = 1
 let g:java_highlight_debug = 1
@@ -111,17 +107,14 @@ let g:java_allow_cpp_keywords = 1
 let g:java_space_errors = 1
 let g:java_highlight_functions = 1
 
-" }}}
-" JavaScript {{{
+" JavaScript {{{2
 let g:SimpleJsIndenter_BriefMode = 1
 let g:SimpleJsIndenter_CaseIndentLevel = -1
 
-" }}}
-" Ruby {{{
+" Ruby {{{2
 let g:ruby_no_expensive = 1
 
-" }}}
-" Folding {{{
+" Folding {{{2
 " augroup: a
 " function: f
 let g:vimsyn_folding = 'af'
