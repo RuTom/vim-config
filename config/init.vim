@@ -121,7 +121,7 @@ function! s:use_dein()
 			let s:dein_dir = l:cache_path . '/repos/github.com/Shougo/dein.vim'
 			" Clone dein if first-time setup
 			if ! isdirectory(s:dein_dir)
-				execute '!git clone https://github.com/Shougo/dein.vim' s:dein_dir
+				call system('git clone https://github.com/Shougo/dein.vim ' . shellescape(s:dein_dir))
 				if v:shell_error
 					call s:error('dein installation has failed! is git installed?')
 					finish
