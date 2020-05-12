@@ -51,7 +51,7 @@ Best with [Neovim] or [Vim8] and `python3` enabled.
   * [Git Version Control](#git-version-control)
   * [Plugin: Denite](#plugin-denite)
   * [Plugin: Defx](#plugin-defx)
-  * [Plugin: Asyncomplete and Emmet](#plugin-asyncomplete-and-emmet)
+  * [Plugin: Asyncomplete and Emmet](#plugin-asyncomplete)
   * [Plugin: Signature](#plugin-signature)
 * [Credits & Contribution](#credits--contribution)
 
@@ -386,7 +386,6 @@ _Note_ that 95% of the plugins are **[lazy-loaded]**.
 | [SirVer/ultisnips] | Ultimate snippet solution
 | [honza/vim-snippets] | Community-maintained snippets for programming languages
 | [dense-analysis/ale] | Check syntax asynchronously and fix files with LSP support
-| [mattn/emmet-vim] | Provides support for expanding abbreviations alá emmet
 | [ncm2/float-preview.nvim] | Less annoying completion preview window
 | [ludovicchabant/vim-gutentags] | Manages your tag files
 | [Raimondi/delimitMate] | Auto-completion for quotes, parens, brackets
@@ -544,7 +543,6 @@ _Note_ that 95% of the plugins are **[lazy-loaded]**.
 [SirVer/ultisnips]: https://github.com/SirVer/ultisnips
 [honza/vim-snippets]: https://github.com/honza/vim-snippets
 [dense-analysis/ale]: https://github.com/dense-analysis/ale
-[mattn/emmet-vim]: https://github.com/mattn/emmet-vim
 [ncm2/float-preview.nvim]: https://github.com/ncm2/float-preview.nvim
 [ludovicchabant/vim-gutentags]: https://github.com/ludovicchabant/vim-gutentags
 [Raimondi/delimitMate]: https://github.com/Raimondi/delimitMate
@@ -628,7 +626,6 @@ Note that,
 
 | Key   | Mode | Action             | Plugin or Mapping
 | ----- |:----:| ------------------ | ------
-| <kbd>Ctrl</kbd>+<kbd>Return</kbd> | 𝐈 | Expand emmet abbreviation | <small>[mattn/emmet-vim]</small>
 | <kbd>Q</kbd> | 𝐍 | Start/stop macro recording | `q`
 | <kbd>gQ</kbd> | 𝐍 | Play macro 'q' | `@q`
 | <kbd>Shift</kbd>+<kbd>Return</kbd> | 𝐈 | Start new line from any cursor position | `<C-o>o`
