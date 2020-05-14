@@ -107,7 +107,8 @@ if = "! has('nvim')"
 # Latex related
 [[plugins]]
 repo = "lervag/vimtex"
-on_ft = "tex"
+on_ft = ["tex", "bib"]
+merged = 0
 
 # Markdown related
 [[plugins]]
@@ -463,7 +464,6 @@ let g:iron_map_extended = 0
 [[plugins]]
 repo = "kana/vim-niceblock"
 on_map = '{"x": "<Plug>"}'
-hook_add = "let g:niceblock_no_default_key_mappings = 0"
 
 [[plugins]]
 repo = "t9md/vim-choosewin"
@@ -825,10 +825,10 @@ let g:delimitMate_expand_inside_quotes = 0
 let g:delimitMate_excluded_ft = 'mail,txt'
 augroup user_plugin_delimitMate
   au!
-  au FileType markdown let b:delimitMate_nesting_quotes = [\"`\"]
-  au FileType tex let b:delimitMate_quotes = \"\"
-  au FileType tex let b:delimitMate_matchpairs = \"(:),[:],{:},`:'\"
-  au FileType python let b:delimitMate_nesting_quotes = ['\"', \"'\"]
+  au FileType markdown let b:delimitMate_nesting_quotes = ["`"]
+  au FileType tex let b:delimitMate_quotes = ""
+  au FileType tex let b:delimitMate_matchpairs = "(:),[:],{:},`:'"
+  au FileType python let b:delimitMate_nesting_quotes = ['"', "'"]
 augroup END
 '''
 

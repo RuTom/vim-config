@@ -5,7 +5,7 @@ augroup user_plugin_filetype " {{{
 	autocmd!
 
 	" Reload vim config automatically
-	autocmd BufWritePost $VIM_PATH/{*.vim,*.yaml,vimrc} nested
+	autocmd BufWritePost $VIM_PATH/{*.vim,*.toml,vimrc} nested
 		\ source $MYVIMRC | redraw
 
 	" Highlight current line only on focused window
@@ -113,6 +113,9 @@ let g:SimpleJsIndenter_CaseIndentLevel = -1
 
 " Ruby {{{2
 let g:ruby_no_expensive = 1
+
+" LaTeX {{{2
+let g:tex_flavor = 'latex'
 
 " Folding {{{2
 " augroup: a

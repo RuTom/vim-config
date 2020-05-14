@@ -129,12 +129,6 @@ if dein#tap('vista.vim')
 	nnoremap <silent> <Leader>a :<C-u>Vista show<CR>
 endif
 
-if dein#tap('emmet-vim')
-	autocmd user_events FileType html,css,javascript,javascriptreact
-		\ EmmetInstall
-		\ | imap <buffer> <C-Return> <Plug>(emmet-expand-abbr)
-endif
-
 if dein#tap('vim-gitgutter')
 	nmap ]g <Plug>(GitGutterNextHunk)
 	nmap [g <Plug>(GitGutterPrevHunk)
@@ -196,12 +190,6 @@ endif
 
 if dein#tap('vim-operator-replace')
 	xmap p <Plug>(operator-replace)
-endif
-
-if dein#tap('vim-niceblock')
-	silent! xmap I  <Plug>(niceblock-I)
-	silent! xmap gI <Plug>(niceblock-gI)
-	silent! xmap A  <Plug>(niceblock-A)
 endif
 
 if dein#tap('accelerated-jk')
@@ -325,10 +313,6 @@ if dein#tap('undotree')
 	nnoremap <Leader>gu :UndotreeToggle<CR>
 endif
 
-if dein#tap('thesaurus_query.vim')
-	nnoremap <silent> <Leader>K :<C-u>ThesaurusQueryReplaceCurrentWord<CR>
-endif
-
 if dein#tap('vim-asterisk')
 	map *   <Plug>(asterisk-g*)
 	map g*  <Plug>(asterisk-*)
@@ -414,6 +398,169 @@ if dein#tap('vim-textobj-function')
 	omap <silent> if <Plug>(textobj-function-i)
 	xmap <silent> af <Plug>(textobj-function-a)
 	xmap <silent> if <Plug>(textobj-function-i)
+endif
+
+if dein#tap('vimtex')
+	let g:vimtex_mappings_enabled = 0
+
+	let g:vimtex_compiler_latexmk = {
+		\ 'build_dir' : 'build',
+		\}
+
+	if executable('zathura')
+		let g:vimtex_view_method = 'zathura'
+	endif
+
+	autocmd user_events FileType tex,bib call s:vimtex_mappings()
+
+	function! s:vimtex_mappings() abort
+		function! s:map(mode, lhs, rhs, ...) abort
+			if !hasmapto(a:rhs, a:mode)
+				\ && index(get(g:vimtex_mappings_disable, a:mode, []), a:lhs) < 0
+				\ && (empty(maparg(a:lhs, a:mode)) || a:0 > 0)
+				silent execute a:mode . 'map <silent><nowait><buffer>' a:lhs a:rhs
+			endif
+		endfunction
+
+		call s:map('n', '<leader>li', '<plug>(vimtex-info)')
+		call s:map('n', '<leader>lI', '<plug>(vimtex-info-full)')
+		call s:map('n', '<leader>lx', '<plug>(vimtex-reload)')
+		call s:map('n', '<leader>lX', '<plug>(vimtex-reload-state)')
+		call s:map('n', '<leader>ls', '<plug>(vimtex-toggle-main)')
+		call s:map('n', '<leader>lq', '<plug>(vimtex-log)')
+		call s:map('n', 'ds$', '<plug>(vimtex-env-delete-math)')
+		call s:map('n', 'cs$', '<plug>(vimtex-env-change-math)')
+		call s:map('n', 'dse', '<plug>(vimtex-env-delete)')
+		call s:map('n', 'cse', '<plug>(vimtex-env-change)')
+		call s:map('n', 'tse', '<plug>(vimtex-env-toggle-star)')
+		call s:map('n', 'dsc',  '<plug>(vimtex-cmd-delete)')
+		call s:map('n', 'csc',  '<plug>(vimtex-cmd-change)')
+		call s:map('n', 'tsc',  '<plug>(vimtex-cmd-toggle-star)')
+		call s:map('n', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
+		call s:map('x', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
+		call s:map('i', '<F7>', '<plug>(vimtex-cmd-create)')
+		call s:map('n', '<F7>', '<plug>(vimtex-cmd-create)')
+		call s:map('x', '<F7>', '<plug>(vimtex-cmd-create)')
+		call s:map('n', 'dsd', '<plug>(vimtex-delim-delete)')
+		call s:map('n', 'csd', '<plug>(vimtex-delim-change-math)')
+		call s:map('n', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
+		call s:map('x', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
+		call s:map('n', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
+		call s:map('x', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
+		call s:map('i', ']]',  '<plug>(vimtex-delim-close)')
+		if g:vimtex_doc_enabled
+			call s:map('n', 'K', '<plug>(vimtex-doc-package)')
+		endif
+		if g:vimtex_compiler_enabled
+			call s:map('n', '<leader>ll', '<plug>(vimtex-compile)')
+			call s:map('n', '<leader>lo', '<plug>(vimtex-compile-output)')
+			call s:map('n', '<leader>lL', '<plug>(vimtex-compile-selected)')
+			call s:map('x', '<leader>lL', '<plug>(vimtex-compile-selected)')
+			call s:map('n', '<leader>lk', '<plug>(vimtex-stop)')
+			call s:map('n', '<leader>lK', '<plug>(vimtex-stop-all)')
+			call s:map('n', '<leader>le', '<plug>(vimtex-errors)')
+			call s:map('n', '<leader>lc', '<plug>(vimtex-clean)')
+			call s:map('n', '<leader>lC', '<plug>(vimtex-clean-full)')
+			call s:map('n', '<leader>lg', '<plug>(vimtex-status)')
+			call s:map('n', '<leader>lG', '<plug>(vimtex-status-all)')
+		endif
+		if g:vimtex_motion_enabled
+			" These are forced in order to overwrite matchit mappings
+			call s:map('n', '%', '<plug>(vimtex-%)', 1)
+			call s:map('x', '%', '<plug>(vimtex-%)', 1)
+			call s:map('o', '%', '<plug>(vimtex-%)', 1)
+			call s:map('n', ']]', '<plug>(vimtex-]])')
+			call s:map('n', '][', '<plug>(vimtex-][)')
+			call s:map('n', '[]', '<plug>(vimtex-[])')
+			call s:map('n', '[[', '<plug>(vimtex-[[)')
+			call s:map('x', ']]', '<plug>(vimtex-]])')
+			call s:map('x', '][', '<plug>(vimtex-][)')
+			call s:map('x', '[]', '<plug>(vimtex-[])')
+			call s:map('x', '[[', '<plug>(vimtex-[[)')
+			call s:map('o', ']]', '<plug>(vimtex-]])')
+			call s:map('o', '][', '<plug>(vimtex-][)')
+			call s:map('o', '[]', '<plug>(vimtex-[])')
+			call s:map('o', '[[', '<plug>(vimtex-[[)')
+			call s:map('n', ']M', '<plug>(vimtex-]M)')
+			call s:map('n', ']m', '<plug>(vimtex-]m)')
+			call s:map('n', '[M', '<plug>(vimtex-[M)')
+			call s:map('n', '[m', '<plug>(vimtex-[m)')
+			call s:map('x', ']M', '<plug>(vimtex-]M)')
+			call s:map('x', ']m', '<plug>(vimtex-]m)')
+			call s:map('x', '[M', '<plug>(vimtex-[M)')
+			call s:map('x', '[m', '<plug>(vimtex-[m)')
+			call s:map('o', ']M', '<plug>(vimtex-]M)')
+			call s:map('o', ']m', '<plug>(vimtex-]m)')
+			call s:map('o', '[M', '<plug>(vimtex-[M)')
+			call s:map('o', '[m', '<plug>(vimtex-[m)')
+			call s:map('n', ']/', '<plug>(vimtex-]/)')
+			call s:map('n', ']*', '<plug>(vimtex-]*)')
+			call s:map('n', '[/', '<plug>(vimtex-[/)')
+			call s:map('n', '[*', '<plug>(vimtex-[*)')
+			call s:map('x', ']/', '<plug>(vimtex-]/)')
+			call s:map('x', ']*', '<plug>(vimtex-]*)')
+			call s:map('x', '[/', '<plug>(vimtex-[/)')
+			call s:map('x', '[*', '<plug>(vimtex-[*)')
+			call s:map('o', ']/', '<plug>(vimtex-]/)')
+			call s:map('o', ']*', '<plug>(vimtex-]*)')
+			call s:map('o', '[/', '<plug>(vimtex-[/)')
+			call s:map('o', '[*', '<plug>(vimtex-[*)')
+		endif
+		if g:vimtex_text_obj_enabled
+			call s:map('x', 'id', '<plug>(vimtex-id)')
+			call s:map('x', 'ad', '<plug>(vimtex-ad)')
+			call s:map('o', 'id', '<plug>(vimtex-id)')
+			call s:map('o', 'ad', '<plug>(vimtex-ad)')
+			call s:map('x', 'i$', '<plug>(vimtex-i$)')
+			call s:map('x', 'a$', '<plug>(vimtex-a$)')
+			call s:map('o', 'i$', '<plug>(vimtex-i$)')
+			call s:map('o', 'a$', '<plug>(vimtex-a$)')
+			call s:map('x', 'iP', '<plug>(vimtex-iP)')
+			call s:map('x', 'aP', '<plug>(vimtex-aP)')
+			call s:map('o', 'iP', '<plug>(vimtex-iP)')
+			call s:map('o', 'aP', '<plug>(vimtex-aP)')
+			call s:map('x', 'im', '<plug>(vimtex-im)')
+			call s:map('x', 'am', '<plug>(vimtex-am)')
+			call s:map('o', 'im', '<plug>(vimtex-im)')
+			call s:map('o', 'am', '<plug>(vimtex-am)')
+			if vimtex#text_obj#targets#enabled()
+				call vimtex#text_obj#targets#init()
+				" These are handled explicitly to avoid conflict with gitgutter
+				call s:map('x', 'ic', '<plug>(vimtex-targets-i)c')
+				call s:map('x', 'ac', '<plug>(vimtex-targets-a)c')
+				call s:map('o', 'ic', '<plug>(vimtex-targets-i)c')
+				call s:map('o', 'ac', '<plug>(vimtex-targets-a)c')
+			else
+				if g:vimtex_text_obj_variant ==# 'targets'
+					call vimtex#log#warning(
+						\ "Ignoring g:vimtex_text_obj_variant = 'targets'"
+						\ . " because 'g:loaded_targets' does not exist or is 0.")
+				endif
+				let g:vimtex_text_obj_variant = 'vimtex'
+				call s:map('x', 'ie', '<plug>(vimtex-ie)')
+				call s:map('x', 'ae', '<plug>(vimtex-ae)')
+				call s:map('o', 'ie', '<plug>(vimtex-ie)')
+				call s:map('o', 'ae', '<plug>(vimtex-ae)')
+				call s:map('x', 'ic', '<plug>(vimtex-ic)')
+				call s:map('x', 'ac', '<plug>(vimtex-ac)')
+				call s:map('o', 'ic', '<plug>(vimtex-ic)')
+				call s:map('o', 'ac', '<plug>(vimtex-ac)')
+			endif
+		endif
+		if g:vimtex_toc_enabled
+			call s:map('n', '<leader>lt', '<plug>(vimtex-toc-open)')
+			call s:map('n', '<leader>lT', '<plug>(vimtex-toc-toggle)')
+		endif
+		if g:vimtex_imaps_enabled
+			call s:map('n', '<leader>lm', '<plug>(vimtex-imaps-list)')
+		endif
+		if has_key(b:vimtex, 'viewer')
+			call s:map('n', '<leader>lv', '<plug>(vimtex-view)')
+			if has_key(b:vimtex.viewer, 'reverse_search')
+				call s:map('n', '<leader>lr', '<plug>(vimtex-reverse-search)')
+			endif
+		endif
+	endfunction
 endif
 
 " vim: set ts=2 sw=2 tw=80 noet :
