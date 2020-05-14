@@ -99,6 +99,7 @@ if dein#tap('denite.nvim')
 		let @/ = substitute(escape(@s, '\' . a:cmdtype), '\n', '\\n', 'g')
 		let @s = temp
 	endfunction
+
 endif
 
 if dein#tap('vim-lsp')
@@ -276,10 +277,6 @@ if dein#tap('goyo.vim')
 	nnoremap <Leader>G :Goyo<CR>
 endif
 
-if dein#tap('vimwiki')
-	nnoremap <silent> <Leader>W :<C-u>VimwikiIndex<CR>
-endif
-
 if dein#tap('vim-choosewin')
 	nmap -         <Plug>(choosewin)
 	nmap <Leader>- :<C-u>ChooseWinSwapStay<CR>
@@ -401,18 +398,7 @@ if dein#tap('vim-textobj-function')
 endif
 
 if dein#tap('vimtex')
-	let g:vimtex_mappings_enabled = 0
-
-	let g:vimtex_compiler_latexmk = {
-		\ 'build_dir' : 'build',
-		\}
-
-	if executable('zathura')
-		let g:vimtex_view_method = 'zathura'
-	endif
-
 	autocmd user_events FileType tex,bib call s:vimtex_mappings()
-
 	function! s:vimtex_mappings() abort
 		function! s:map(mode, lhs, rhs, ...) abort
 			if !hasmapto(a:rhs, a:mode)
@@ -547,10 +533,7 @@ if dein#tap('vimtex')
 				call s:map('o', 'ac', '<plug>(vimtex-ac)')
 			endif
 		endif
-		if g:vimtex_toc_enabled
-			call s:map('n', '<leader>lt', '<plug>(vimtex-toc-open)')
-			call s:map('n', '<leader>lT', '<plug>(vimtex-toc-toggle)')
-		endif
+		nnoremap <silent> <leader>lt :<c-u>Denite vimtex<cr>
 		if g:vimtex_imaps_enabled
 			call s:map('n', '<leader>lm', '<plug>(vimtex-imaps-list)')
 		endif

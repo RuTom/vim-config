@@ -108,6 +108,7 @@ if = "! has('nvim')"
 [[plugins]]
 repo = "lervag/vimtex"
 on_ft = ["tex", "bib"]
+hook_add = "source $VIM_PATH/config/plugins/vimtex.vim"
 merged = 0
 
 # Markdown related
