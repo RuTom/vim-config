@@ -84,7 +84,6 @@ function! s:build_menu(cword)
 
 	" File operations
 	let l:items = extend(l:items, [
-		\ { 'word': 'Lint', 'user_data': 'Neomake' },
 		\ { 'word': 'Bookmark', 'user_data': 'BookmarkToggle' },
 		\ { 'word': 'Git diff', 'user_data': 'GdiffThis' },
 		\ { 'word': 'Unsaved diff', 'user_data': 'DiffOrig' },
