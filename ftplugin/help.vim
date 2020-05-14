@@ -22,6 +22,7 @@ if winnr('$') > 2 + (bufname('defx') ==# '' ? 0 : 1)
 	wincmd K
 else
 	wincmd L
+	vertical resize 80
 endif
 
 " Exit help window with 'q'
