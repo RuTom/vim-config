@@ -30,7 +30,7 @@ let g:vimtex_syntax_nested = {
   \   'viml' : 'vim',
   \   'bash' : 'sh',
   \   'py' : 'python',
-	\ }
+	\ },
 	\ 'ignored' : {
 	\   'python' : [
 	\     'pythonEscape',
