@@ -246,9 +246,7 @@ _Note_ that 95% of the plugins are **[lazy-loaded]**.
 | -------------- | ----------------------
 | [Shougo/dein.vim] | Dark powered Vim/Neovim plugin manager
 | [rafi/awesome-colorschemes] | Awesome color-schemes
-| [itchyny/lightline.vim] | Lightweight statusbar/tabbar configuration
 | [itchyny/vim-gitbranch] | Lightweight git branch detection
-| [maximbaz/lightline-ale] | Provide ALE information for lightline
 | [ryanoasis/vim-devicons] | Devicons support in vim, requires patched font
 | [itchyny/vim-parenmatch] | Efficient alternative to the standard matchparen plugin
 | [thinca/vim-localrc] | Enable configuration file of each directory
@@ -421,9 +419,7 @@ _Note_ that 95% of the plugins are **[lazy-loaded]**.
 
 [Shougo/dein.vim]: https://github.com/Shougo/dein.vim
 [rafi/awesome-colorschemes]: https://github.com/rafi/awesome-vim-colorschemes
-[itchyny/lightline.vim]: https://github.com/itchyny/lightline.vim
 [itchyny/vim-gitbranch]: https://github.com/itchyny/vim-gitbranch
-[maximbaz/lightline-ale]: https://github.com/maximbaz/lightline-ale
 [ryanoasis/vim-devicons]: https://github.com/ryanoasis/vim-devicons
 [itchyny/vim-parenmatch]: https://github.com/itchyny/vim-parenmatch
 [thinca/vim-localrc]: https://github.com/thinca/vim-localrc

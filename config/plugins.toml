@@ -2,75 +2,75 @@
 # ===
 # See config/plugins/all.vim for plugin mappings and config/plugins/*.vim
 
-# Startup
-# -------
+# Perm Loading {{{1
+# ==============
 [[plugins]]
 repo = "Shougo/dein.vim"
 trusted = 1
 
-[[plugins]]
-repo = "itchyny/lightline.vim"
-hook_source = "source $VIM_PATH/config/plugins/lightline.vim"
-trusted = 1
-
+# Statusline providers {{{2
 [[plugins]]
 repo = "itchyny/vim-gitbranch"
-depends = "lightline"
-
-[[plugins]]
-repo = "maximbaz/lightline-ale"
-depends = "lightline"
-
-[[plugins]]
-repo = "mengelbrecht/lightline-bufferline"
-depends = "lightline"
 
 [[plugins]]
 repo = "ryanoasis/vim-devicons"
 
 [[plugins]]
+repo = "pacha/vem-tabline"
+hook_add = '''
+let g:vem_tabline_show = 2
+let g:vem_tabline_show_number = 'buffnr'
+let g:vem_tabline_number_symbol = ': '
+let g:vem_tabline_left_arrow = '◀'
+let g:vem_tabline_right_arrow = '▶'
+'''
+
+# Textobjects {{{2
+[[plugins]]
 repo = "itchyny/vim-parenmatch"
 
 [[plugins]]
-repo = "thinca/vim-localrc"
+repo = "wellle/targets.vim"
+merged = 0
 
+# Automatic configuration {{{2
 [[plugins]]
-repo = "romainl/vim-cool"
+repo = "thinca/vim-localrc"
 
 [[plugins]]
 repo = "sgur/vim-editorconfig"
 
 [[plugins]]
+repo = "tpope/vim-sleuth"
+hook_add = "let g:sleuth_neighbor_limit = 5"
+
+[[plugins]]
 repo = "Shougo/context_filetype.vim"
 
-[[plugins]]
-repo = "jaawerth/nrun.vim"
-
+# Filemanager integration {{{2
 [[plugins]]
 repo = "justinmk/vim-gtfo"
+
+# Interface {{{2
+[[plugins]]
+repo = "romainl/vim-cool"
 
 [[plugins]]
 repo = "wellle/visual-split.vim"
 merged = 0
 
 [[plugins]]
-repo = "wellle/targets.vim"
-merged = 0
+repo = "christoomey/vim-tmux-navigator"
+if = "! (has('win32') || has('win64'))"
+hook_add = "let g:tmux_navigator_no_mappings = 1"
 
+# Colorschemes {{{2
 [[plugins]]
 repo = "rafi/awesome-vim-colorschemes"
 merged = 0
 trusted = 1
 
-[[plugins]]
-repo = "christoomey/vim-tmux-navigator"
-if = "! (has('win32') || has('win64'))"
-hook_add = "let g:tmux_navigator_no_mappings = 1"
-
-[[plugins]]
-repo = "tpope/vim-sleuth"
-hook_add = "let g:sleuth_neighbor_limit = 5"
-
+# Clap {{{2
 [[plugins]]
 repo = "liuchengxu/vim-clap"
 merged = 0
@@ -86,6 +86,7 @@ highlight! link ClapMatches Function
 highlight! link ClapNoMatchesFound WarningMsg
 '''
 
+# Vim/Neovim Compat {{{2
 [[plugins]]
 repo = "equalsraf/neovim-gui-shim"
 if = "has('gui_running')"
@@ -99,19 +100,21 @@ depends = "vim-hug-neovim-rpc"
 repo = "roxma/vim-hug-neovim-rpc"
 if = "! has('nvim')"
 
-# Lazy Loading
-# ==========================================
+# }}}
 
-# Languages
+# Lazy Loading {{{1
+# ============
+
+# Languages {{{2
 # ---------
-# Latex related
+# Latex related {{{3
 [[plugins]]
 repo = "lervag/vimtex"
 on_ft = ["tex", "bib"]
 hook_add = "source $VIM_PATH/config/plugins/vimtex.vim"
 merged = 0
 
-# Markdown related
+# Markdown related {{{3
 [[plugins]]
 repo = "plasticboy/vim-markdown"
 on_ft = "markdown"
@@ -152,7 +155,7 @@ let g:gfm_syntax_highlight_emoji = 0
 let g:gfm_syntax_enable_filetypes = ['markdown']
 '''
 
-# Javascript related
+# Javascript related {{{3
 [[plugins]]
 repo = "pangloss/vim-javascript"
 on_ft = ["javascript", "javascriptreact"]
@@ -195,7 +198,7 @@ on_ft = "json"
 repo = "posva/vim-vue"
 on_ft = "vue"
 
-# Golang related
+# Golang related {{{3
 [[plugins]]
 repo = "fatih/vim-go"
 if = "has('nvim-0.3.2') || has('patch-8.0.1453')"
@@ -226,7 +229,7 @@ let g:go_highlight_variable_declarations = 0
 let g:go_highlight_variable_assignments = 0
 '''
 
-# Python related
+# Python related {{{3
 [[plugins]]
 repo = "vim-python/python-syntax"
 on_ft = "python"
@@ -243,7 +246,7 @@ on_ft = "python"
 repo = "raimon49/requirements.txt.vim"
 on_ft = "requirements"
 
-# Misc
+# Misc {{{3
 [[plugins]]
 repo = "hail2u/vim-css3-syntax"
 on_ft = "css"
@@ -382,9 +385,9 @@ repo = "hashivim/vim-terraform"
 on_ft = "terraform"
 on_cmd = ["Terraform", "TerraformFmt"]
 
-# ==========================================
-# Commands
+# Commands {{{2
 # --------
+
 [[plugins]]
 repo = "Shougo/defx.nvim"
 hook_source = "source $VIM_PATH/config/plugins/defx.vim"
@@ -523,8 +526,7 @@ depends = "fzf"
 on_func = ["fzf#vim#with_preview", "fzf#run", "vista#finder#fzf#Run"]
 on_cmd = ["Files", "GitFiles", "Buffers", "Lines", "Locate", "Colors", "Ag", "Rg", "Tags"]
 
-# ==========================================
-# Interface
+# Interface {{{2
 # ---------
 [[plugins]]
 repo = "haya14busa/vim-asterisk"
@@ -636,9 +638,8 @@ hook_source = "source $VIM_PATH/config/plugins/goyo.vim"
 repo = "junegunn/limelight.vim"
 on_cmd = "Limelight"
 
-# ==========================================
-# Completion and code analysis
-# ----------
+# Completion and code analysis {{{2
+# ----------------------------
 [[plugins]]
 repo = "prabirshrestha/async.vim"
 
@@ -833,8 +834,7 @@ augroup user_plugin_delimitMate
 augroup END
 '''
 
-# ==========================================
-# Denite
+# Denite {{{2
 # ------
 [[plugins]]
 repo = "Shougo/denite.nvim"
@@ -880,8 +880,11 @@ command! -nargs=+ -complete=file Z call denite#start(
   \ [{'name': 'z', 'args': [<q-args>], {'immediately': 1}}])
 '''
 
-# ==========================================
-# Operators
+[[plugins]]
+repo = 'igrep/denite-mapping'
+on_source = 'denite.nvim'
+
+# Operators {{{2
 # ---------
 [[plugins]]
 repo = "kana/vim-operator-user"
@@ -899,8 +902,7 @@ let g:operator_sandwich_no_default_key_mappings = 1
 let g:textobj_sandwich_no_default_key_mappings = 1
 '''
 
-# ==========================================
-# Text objects
+# Text objects {{{2
 # ------------
 [[plugins]]
 repo = "kana/vim-textobj-user"
@@ -936,3 +938,6 @@ repo = "kana/vim-textobj-function"
 on_map = '{"ox": "<Plug>"}'
 hook_add = "let g:textobj_function_no_default_key_mappings = 1"
 
+# }}}
+
+#  vim: set ts=2 sw=2 tw=80 et fdm=marker ft=toml :

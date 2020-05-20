@@ -38,6 +38,12 @@ let g:badge_nofile = get(g:, 'badge_nofile', 'N/A')
 
 let g:badge_project_separator = get(g:, 'badge_project_separator', '|')
 
+let s:badge_mode_map = {
+	\ 'n': 'NORMAL', 'i': 'INSERT', 'R': 'REPLACE', 'v': 'VISUAL', 'V': 'V-LINE',
+	\ "\<C-v>": 'V-BLOCK', 'c': 'COMMAND', 's': 'SELECT', 'S': 'S-LINE',
+	\ "\<C-s>": 'S-BLOCK', 't': 'TERMINAL'
+	\ }
+
 " Setup {{{1
 
 " Clear cache on save
@@ -280,21 +286,45 @@ function! badge#modified(...) abort " {{{2
 	return &modified && ! choosewin ? label : ''
 endfunction
 
-function! badge#windowmode(...) abort " {{{2
-	" Returns file's mode: read-only and/or zoomed
+function! badge#readonly(...) abort " {{{2
+	" Returns file's read-only state
 	" Parameters:
 	"   Read-only symbol, default: R
-	"   Zoomed buffer symbol, default: Z
-
-	let s:modes = ''
+	"
 	if &filetype !~? g:badge_filetype_blacklist && &readonly
-		let s:modes .= a:0 > 0 ? a:1 : 'R'
+		return a:0 >= 1 ? a:1 : 'R'
 	endif
-	if exists('t:zoomed') && bufnr('%') == t:zoomed.nr
-		let s:modes .= a:0 > 1 ? a:2 : 'Z'
-	endif
+	return ''
+endfunction
 
-	return s:modes
+function! badge#mode(...) abort " {{{2
+	" Returns vim mode
+	" Parameters:
+	"   1: Seperator between mode and spell, if present. default [none]
+	" Options:
+	"   g:badge_mode_map dictionary to match modes
+
+	if a:0 > 0 && &spell
+		let l:sep = a:1
+		let l:mode = get(exists('g:badge_mode_map')? g:badge_mode_map : s:badge_mode_map,
+			\ mode(), '')
+		return l:mode . ' ' . l:sep . ' ' . &spelllang
+	else
+		return get(exists('g:badge_mode_map') ? g:badge_mode_map : s:badge_mode_map,
+			\ mode(), '')
+	endif
+endfunction
+
+function! badge#highlightmode() abort " {{{2
+	" Links Statusline_mode to colors depending on mode
+	let l:mode_match = {
+		\ 'n': 'normal', 'i': 'insert', 'R': 'replace', 'v': 'visual',
+		\ 'V': 'visual', "\<C-v>": 'visual', 'c': 'command', 's': 'select',
+		\ 'S': 'select', "\<C-s>": 'select', 't': 'terminal'
+		\ }
+	let l:mode = get(l:mode_match, mode(), 'normal')
+	exec printf('hi! link StatusLineMode StatusLineMode_%s', l:mode)
+	return ''
 endfunction
 
 function! badge#format() abort " {{{2
@@ -306,10 +336,23 @@ function! badge#format() abort " {{{2
 	return winwidth(0) > 70 ? ((&fenc !=# '' ? &fenc : &enc) . '[' . &ff . ']') : ''
 endfunction
 
-function! badge#filenamemod() abort " {{{2
-	" Returns filename and modified symbol if file has been modified
+function! badge#filenamemod(...) abort " {{{2
+	" Returns read-only status, filename and modified status
+	" Parameters:
+	"   1: Read-only symbol, default: see badge#readonly()
+	"   2: Modified symbol, default: see badge#modified()
 
-	return badge#filename() . (&modified ? (' ' . badge#modified()): '')
+	let l:ret = ''
+	let l:readonly = a:0 >= 1 ? badge#readonly(a:1) : badge#readonly()
+	let l:modified = a:0 >= 2 ? badge#modified(a:2) : badge#modified()
+	if l:readonly !=# ''
+		let l:ret .= l:readonly . ' '
+	endif
+	let l:ret .= badge#filename()
+	if l:modified !=# ''
+		let l:ret .= ' ' . l:modified
+	endif
+	return l:ret
 endfunction
 
 function! badge#filetype() abort " {{{2

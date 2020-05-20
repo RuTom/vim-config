@@ -301,7 +301,7 @@ nnoremap <C-x> <C-w>x
 nnoremap  [Window]   <Nop>
 nmap      s [Window]
 
-nnoremap <silent><C-w>z :vert resize<CR>:resize<CR>:normal! ze<CR>
+nnoremap <silent> <C-w>z :if winnr('$') != 1 <Bar> tab split <Bar> endif<CR>
 nnoremap <silent> [Window]v  :<C-u>split<CR>
 nnoremap <silent> [Window]g  :<C-u>vsplit<CR>
 nnoremap <silent> [Window]t  :tabnew<CR>
