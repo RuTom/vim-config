@@ -277,6 +277,11 @@ if dein#tap('goyo.vim')
 	nnoremap <Leader>G :Goyo<CR>
 endif
 
+if dein#tap('vim-easy-align')
+	xmap ga <Plug>(EasyAlign)
+	nmap ga <Plug>(EasyAlign)
+endif
+
 if dein#tap('vim-choosewin')
 	nmap -         <Plug>(choosewin)
 	nmap <Leader>- :<C-u>ChooseWinSwapStay<CR>

@@ -638,6 +638,10 @@ hook_source = "source $VIM_PATH/config/plugins/goyo.vim"
 repo = "junegunn/limelight.vim"
 on_cmd = "Limelight"
 
+[[plugins]]
+repo = "junegunn/vim-easy-align"
+on_map = '{"nx": "<Plug>"}'
+
 # Completion and code analysis {{{2
 # ----------------------------
 [[plugins]]
