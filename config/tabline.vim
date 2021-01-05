@@ -2,10 +2,12 @@
 " Source: https://github.com/LinArcX/mpbtl
 
 let s:tabline_numbers = 0
+let s:tabline_project = 0
 
 hi default link BufTabLineCurrent TabLineSel
 hi default link BufTabLineHidden  TabLine
 hi default link BufTabLineFill    TabLineFill
+hi default link TabLineAlt        TabLineFill
 
 " '['.nr2char(0x1f604).']',  0x270d, '[█]', [+]
 let s:sign_indicator = '+'
@@ -61,7 +63,7 @@ function! tabline#render()
 				let tab.sep = strridx(tab.path, s:dirsep, tab.sep - 1)
 				let tab.label = tab.path[tab.sep + 1:]
 			endif
-			let tabs_per_tail[tab.label] = get(tabs_per_tail, tab.label, 0) + 1
+			let tabs_per_tail[ab.label] = get(tabs_per_tail, tab.label, 0) + 1
 		endfor
 	endwhile
 
@@ -109,10 +111,14 @@ function! tabline#render()
 			endwhile
 		endfor
 	endif
+
+	let project = ''
+	if s:tabline_project == 1
+		let project = '%#TabLineAlt#' . ' ' . badge#project() . ' '
+	endif
 	let swallowclicks = '%'.(1 + tabpagenr('$')).'X'
-	return swallowclicks . join(map(tabs,'printf("%%#BufTabLine%s#%s",v:val.hilite,strtrans(v:val.label))'),'') . '%#BufTabLineFill#'
+	return project . swallowclicks . join(map(tabs,'printf("%%#BufTabLine%s#%s",v:val.hilite,strtrans(v:val.label))'),'') . '%#BufTabLineFill#'
 endfunction
 
 set showtabline=2
-set tabline=%!tabline#render()
-
+set tabline+=%!tabline#render()
