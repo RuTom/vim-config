@@ -95,6 +95,11 @@ augroup user_statusline
 	autocmd User GutentagsUpdating redrawstatus
 	autocmd User CocStatusChange,CocGitStatusChange redrawstatus
 	autocmd User CocDiagnosticChange redrawstatus
+	" autocmd User lsp_diagnostics_updated redrawstatus
+
+	" if exists('##LspDiagnosticsChanged')
+	" 	autocmd LspDiagnosticsChanged * redrawstatus
+	" endif
 augroup END
 " }}}
 

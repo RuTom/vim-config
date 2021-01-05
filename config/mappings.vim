@@ -58,8 +58,13 @@ cnoremap <C-b> <Left>
 " Scroll {{{1
 " ------
 
+" Scroll step sideways
 nnoremap zl z4l
 nnoremap zh z4h
+
+" Resize tab windows after top/bottom window movement
+nnoremap <C-w>K <C-w>K<C-w>=
+nnoremap <C-w>J <C-w>J<C-w>=
 
 " Improve scroll, credits: https://github.com/Shougo
 " noremap <expr> <C-f> max([winheight(0) - 2, 1])
@@ -145,16 +150,11 @@ nnoremap <Leader>cw :<C-u>silent! keeppatterns %substitute/\s\+$//e<CR>
 nmap <BS> %
 xmap <BS> %
 
+" Repeat latest f, t, F or T
+nnoremap \ ;
+
 " Select last paste
 nnoremap <expr> gp '`['.strpart(getregtype(), 0, 1).'`]'
-
-" `<Tab>`/`<S-Tab>` to move between matches without leaving incremental search.
-" Note dependency on `'wildcharm'` being set to `<C-z>` in order for this to
-" work.
-cnoremap <expr> <Tab>
-	\ getcmdtype() == '/' \|\| getcmdtype() == '?' ? '<CR>/<C-r>/' : '<C-z>'
-cnoremap <expr> <S-Tab>
-	\ getcmdtype() == '/' \|\| getcmdtype() == '?' ? '<CR>?<C-r>/' : '<S-Tab>'
 
 " Quick substitute within selected area
 xnoremap sg :s//gc<Left><Left><Left>
@@ -177,7 +177,8 @@ endfunction "}}}
 nnoremap ! :!
 
 " Put vim command output into buffer
-nnoremap g! :<C-u>call <SID>readcommand()<CR>
+nnoremap g! :<C-u>put=execute('')<Left><Left>
+"nnoremap g! :<C-u>call <SID>readcommand()<CR>
 
 function! s:readcommand() abort " {{{2
 	call inputsave()
@@ -211,7 +212,7 @@ cnoremap <Down> <C-n>
 map <Leader>cd :lcd %:p:h<CR>:pwd<CR>
 
 " Open file under the cursor in a vsplit
-nnoremap gf :rightbelow wincmd f<CR>
+nnoremap gf :vertical wincmd f<CR>
 
 " Fast saving from all modes
 nnoremap <Leader>w :write<CR>
@@ -250,6 +251,16 @@ nnoremap <silent> <A-]> :<C-u>tabnext<CR>
 " Custom Tools {{{1
 " ------------
 
+" Terminal
+if exists(':tnoremap')
+	if has('nvim')
+		tnoremap   jj         <C-\><C-n>
+	else
+		tnoremap   <ESC><ESC>  <C-w>N
+		tnoremap   jj          <C-w>N
+	endif
+endif
+
 " Source line and selection in vim
 vnoremap <Leader>S y:execute @@<CR>:echo 'Sourced selection.'<CR>
 nnoremap <Leader>S ^vg_y:execute @@<CR>:echo 'Sourced line.'<CR>
@@ -263,9 +274,9 @@ endif
 nmap <Leader>se :<C-u>SessionSave<CR>
 nmap <Leader>sl :<C-u>SessionLoad<CR>
 
-" Open SCM website
-nmap <Leader>o :<C-u>OpenSCM<CR>
-vmap <Leader>o :OpenSCM<CR>
+" Jump entire buffers in jumplist
+nnoremap g<C-i> :<C-u>call JumpBuffer(-1)<CR>
+nnoremap g<C-o> :<C-u>call JumpBuffer(1)<CR>
 
 nnoremap <silent> <Leader>ml :call <SID>append_modeline()<CR>
 
@@ -290,8 +301,9 @@ endfunction "}}}
 " -------------------------
 
 " Ultimatus Quitos
-autocmd user_events BufWinEnter * if &buftype == ''
-	\ | nnoremap <silent><buffer> q :quit<CR>
+autocmd user_events BufWinEnter,BufNew *
+	\ if &buftype == '' && ! mapcheck('q', 'n')
+	\ |   nnoremap <silent><buffer> q :<C-u>quit<CR>
 	\ | endif
 
 nnoremap <C-q> <C-w>
@@ -301,7 +313,6 @@ nnoremap <C-x> <C-w>x
 nnoremap  [Window]   <Nop>
 nmap      s [Window]
 
-nnoremap <silent> <C-w>z :if winnr('$') != 1 <Bar> tab split <Bar> endif<CR>
 nnoremap <silent> [Window]v  :<C-u>split<CR>
 nnoremap <silent> [Window]g  :<C-u>vsplit<CR>
 nnoremap <silent> [Window]t  :tabnew<CR>
@@ -309,6 +320,7 @@ nnoremap <silent> [Window]o  :<C-u>only<CR>
 nnoremap <silent> [Window]b  :b#<CR>
 nnoremap <silent> [Window]c  :close<CR>
 nnoremap <silent> [Window]x  :<C-u>call <SID>window_empty_buffer()<CR>
+nnoremap <silent> [Window]z  :<C-u>call <SID>zoom()<CR>
 
 " Split current buffer, go to previous window and previous buffer
 nnoremap <silent> [Window]sv :split<CR>:wincmd p<CR>:e#<CR>
@@ -341,13 +353,28 @@ function! s:toggle_background() abort "{{{2
 	endif
 endfunction "}}}
 
+
+
 function! s:window_empty_buffer() "{{{2
 	let l:current = bufnr('%')
 	if ! getbufvar(l:current, '&modified')
 		enew
 		silent! execute 'bdelete '.l:current
 	endif
-endfunction "}}}
+endfunction
+" }}}
+" Simple zoom toggle
+function! s:zoom() " {{{2
+	if exists('t:zoomed')
+		unlet t:zoomed
+		wincmd =
+	else
+		let t:zoomed = { 'nr': bufnr('%') }
+		vertical resize
+		resize
+		normal! ze
+	endif
+endfunction
 " }}}
 
 " vim: set foldmethod=marker ts=2 sw=2 tw=80 noet :

@@ -48,20 +48,7 @@ hi! link StatusLineMode_command StatusLineMode_normal
 hi! link StatusLineMode_select StatusLineMode_visual
 
 " Tabline: {{{1
-
-call s:HL('VemTablineNormal', s:fg4, s:bg2)
-hi! link VemTablineLocation VemTablineNormal
-hi! link VemTablineNumber VemTablineNormal
-call s:HL('VemTablineSelected', s:bg0, s:fg4)
-hi! link VemTablineLocationSelected VemTablineSelected
-hi! link VemTablineNumberSelected VemTablineSelected
-hi! link VemTablineShown VemTablineNormal
-hi! link VemTablineLocationShown VemTablineNormal
-hi! link VemTablineNumberShown VemTablineNormal
-hi! link VemTablinePartialName VemTablineSeperator
-call s:HL('VemTablineSeparator', s:bg1, s:fg4)
-hi! link VemTablineTabNormal VemTablineNormal
-hi! link VemTablineTabSelected VemTablineSelected
+call s:HL('TabLineAlt', s:fg4, s:bg1)
 
 " Plugins: {{{1
 " FZF: {{{2
