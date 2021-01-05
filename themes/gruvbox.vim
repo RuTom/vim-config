@@ -48,7 +48,7 @@ hi! link StatusLineMode_command StatusLineMode_normal
 hi! link StatusLineMode_select StatusLineMode_visual
 
 " Tabline: {{{1
-call s:HL('TabLineAlt', s:fg4, s:bg1)
+call s:HL('TabLineAlt', s:green, s:bg1, 'italic')
 
 " Plugins: {{{1
 " FZF: {{{2
