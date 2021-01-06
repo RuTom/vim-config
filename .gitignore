@@ -1,6 +1,8 @@
 *~
 /benchmarks/
 /spell/
+/config/local.vim
+/config/local.plugins.yaml
 /.vault.vim
 /.local.vimrc
 /.stignore
