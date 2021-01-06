@@ -63,7 +63,7 @@ function! tabline#render()
 				let tab.sep = strridx(tab.path, s:dirsep, tab.sep - 1)
 				let tab.label = tab.path[tab.sep + 1:]
 			endif
-			let tabs_per_tail[ab.label] = get(tabs_per_tail, tab.label, 0) + 1
+			let tabs_per_tail[tab.label] = get(tabs_per_tail, tab.label, 0) + 1
 		endfor
 	endwhile
 
