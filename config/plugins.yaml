@@ -383,12 +383,6 @@
 - repo: junegunn/limelight.vim
   on_cmd: Limelight
 
-- repo: itchyny/calendar.vim
-  on_cmd: Calendar
-  hook_source: |-
-    let g:calendar_google_calendar = 1
-    let g:calendar_google_task = 1
-
 - repo: deris/vim-shot-f
   on_map: { nxo: <Plug> }
   hook_add: let g:shot_f_no_default_key_mappings = 1
