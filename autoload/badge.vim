@@ -44,14 +44,18 @@ let s:badge_mode_map = {
 	\ "\<C-s>": 'S-BLOCK', 't': 'TERMINAL'
 	\ }
 
+" Private variables
+let s:caches = []
+
 " Setup {{{1
 
 " Clear cache on save
 augroup statusline_cache
 	autocmd!
-	autocmd BufWritePre,FileChangedShellPost * unlet! b:badge_cache_trails
-	autocmd BufReadPost,BufFilePost,BufNewFile *
-		\ unlet! b:badge_cache_filename b:badge_cache_tab
+	autocmd BufWritePre,FileChangedShellPost,TextChanged,InsertLeave *
+		\ unlet! b:badge_cache_trails
+	autocmd BufReadPost,BufFilePost,BufNewFile,BufWritePost *
+		\ for cache_name in s:caches | execute 'unlet! b:' . cache_name | endfor
 augroup END
 
 " Functions {{{1
@@ -94,22 +98,19 @@ function! badge#filename(...) abort " {{{2
 	" limits number of total directories. Caches the result for current buffer.
 	" Parameters:
 	"   1: Buffer number, ignored if tab number supplied
-	"   2: Tab number
-	"   3: Enable to append total window count in tab
-	"   4: Include project directory if different from current
+	"   2: Maximum characters displayed in base filename
+	"   3: Maximum characters displayed in each directory
+	"   4: Cache key
 
-	" Compute buffer name
-	if a:0 > 1
-		let l:buflist = tabpagebuflist(a:2)
-		let l:bufnr = l:buflist[tabpagewinnr(a:2) - 1]
-	elseif a:0 == 1
+	" Compute buffer id
+	let l:bufnr = '%'
+	if a:0 > 0
 		let l:bufnr = a:1
-	elseif a:0 == 0
-		let l:bufnr = '%'
 	endif
 
 	" Use buffer's cached filepath
-	let l:cache_var_name = 'badge_cache_' . (a:0 > 1 ? 'tab' : 'filename')
+	let l:cache_var_name = a:0 > 3 ? a:4 : 'filename'
+	let l:cache_var_name = 'badge_cache_' . l:cache_var_name
 	let l:fn = getbufvar(l:bufnr, l:cache_var_name, '')
 	if len(l:fn) > 0
 		return l:fn
@@ -118,38 +119,54 @@ function! badge#filename(...) abort " {{{2
 	let l:bufname = bufname(l:bufnr)
 	let l:filetype = getbufvar(l:bufnr, '&filetype')
 
-	if a:0 < 2 && l:filetype =~? g:badge_filetype_blacklist && !( l:filetype ==# 'help' )
+	if l:filetype =~? g:badge_filetype_blacklist
 		" Empty if owned by certain plugins
 		let l:fn = ''
-	elseif a:0 < 2 && l:filetype ==# 'help'
-		let l:fn = expand('%:t')
-	elseif a:0 < 2 && l:filetype ==# 'defx'
-		let l:defx = getbufvar(l:bufnr, 'defx')
-		let l:fn = get(get(l:defx, 'context', {}), 'buffer_name')
+	elseif l:filetype ==# 'denite' || l:filetype ==# 'denite-filter'
+		let l:fn = '⌖  denite'
+	elseif l:filetype ==# 'qf'
+		let l:fn = '⌗ list'
+	elseif l:filetype ==# 'TelescopePrompt'
+		let l:fn = '⌖  telescope'
+	elseif l:filetype ==# 'defx'
+		let l:defx = get(getbufvar(l:bufnr, 'defx', {}), 'context', {})
+		let l:fn = '⌯ ' . get(l:defx, 'buffer_name', 'defx')
 		unlet! l:defx
-	elseif a:0 < 2 && l:filetype ==# 'magit'
+	elseif l:filetype ==# 'magit'
 		let l:fn = magit#git#top_dir()
-	elseif a:0 < 2 && l:filetype ==# 'vimfiler'
+	elseif l:filetype ==# 'vimfiler'
 		let l:fn = vimfiler#get_status_string()
 	elseif empty(l:bufname)
 		" Placeholder for empty buffer
 		let l:fn = g:badge_nofile
+	" elseif ! &buflisted
+	" 	let l:fn = ''
 	else
-		" let l:icons = defx_icons#get()
 		" Shorten dir names
-		let l:max = a:0 > 1 ?
-			\ g:badge_tab_dir_max_chars : g:badge_status_dir_max_chars
+		let l:max = a:0 > 2 ? a:3 : g:badge_status_dir_max_chars
 		let short = substitute(l:bufname,
 			\ "[^/]\\{" . l:max . "}\\zs[^/]\*\\ze/", '', 'g')
 
 		" Decrease dir count
-		let l:max = a:0 > 1 ?
-			\ g:badge_tab_filename_max_dirs : g:badge_status_filename_max_dirs
+		let l:max = a:0 > 1 ? a:2 : g:badge_status_filename_max_dirs
 		let parts = split(short, '/')
 		if len(parts) > l:max
 			let parts = parts[-l:max-1 : ]
 		endif
-		let l:fn = join(parts, '/')
+
+		" Set icon
+		let l:icon = ''
+		if exists('*nerdfont#find')
+			let l:icon = nerdfont#find(l:bufname)
+		elseif exists('*defx_icons#get')
+			let l:icon = get(defx_icons#get().icons.extensions, expand('%:e'), {})
+			let l:icon = get(l:icon, 'icon', '')
+		endif
+		if ! empty(l:icon)
+			let l:fn .= l:icon . '  '
+		endif
+
+		let l:fn .= join(parts, '/')
 	endif
 
 	" Append fugitive blob type
@@ -158,27 +175,11 @@ function! badge#filename(...) abort " {{{2
 		let l:fn .= ' (blob)'
 	endif
 
-	" Append window count, for tabs
-	if a:0 > 2 && a:3
-		let l:win_count = tabpagewinnr(a:2, '$')
-		if l:win_count > 1
-			let l:fn .= s:numtr(l:win_count, g:badge_numeric_charset)
-		endif
-	endif
-
-	" Prepend project dir, for tabs
-	if a:0 > 3 && a:4
-		" g:badge_project_separator
-		" let project_dir = getbufvar(a:n, 'project_dir')
-		" if strridx(filepath, project_dir) == 0
-		"	let filepath = strpart(filepath, len(project_dir))
-		"	let project .= fnamemodify(project_dir, ':t') . (a:0 > 0 ? a:1 : '|')
-		"	let l:fn = project . l:fn
-		"	endif
-	endif
-
 	" Cache and return the final result
 	call setbufvar(l:bufnr, l:cache_var_name, l:fn)
+	if index(s:caches, l:cache_var_name) == -1
+		call add(s:caches, l:cache_var_name)
+	endif
 	return l:fn
 endfunction
 
@@ -201,8 +202,8 @@ function! badge#root() abort " {{{2
 		let patterns = ['.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/']
 		for pattern in patterns
 			let is_dir = stridx(pattern, '/') != -1
-			let match = is_dir ? finddir(pattern, curr_dir.';')
-				\ : findfile(pattern, curr_dir.';')
+			let match = is_dir ? finddir(pattern, curr_dir . ';')
+				\ : findfile(pattern, curr_dir . ';')
 			if ! empty(match)
 				let dir = fnamemodify(match, is_dir ? ':p:h:h' : ':p:h')
 				call setbufvar('%', 'project_dir', dir)
@@ -230,7 +231,8 @@ function! badge#branch() abort " {{{2
 endfunction
 
 function! badge#syntax() abort " {{{2
-	" Returns syntax warnings from several plugins (ALE, Neomake, Syntastic)
+	" Returns syntax warnings from several plugins
+	" Supports vim-lsp, ALE, Neomake, and Syntastic
 	if &filetype =~? g:badge_filetype_blacklist
 		return ''
 	endif
@@ -238,7 +240,16 @@ function! badge#syntax() abort " {{{2
 	let l:msg = ''
 	let l:errors = 0
 	let l:warnings = 0
-	if exists('*neomake#Make')
+	let l:hints = 0
+	let l:information = 0
+	if exists('*lsp#get_buffer_diagnostics_counts')
+			\ && get(g:, 'lsp_diagnostics_enabled', 1)
+		let l:counts = lsp#get_buffer_diagnostics_counts()
+		let l:errors = get(l:counts, 'error', '')
+		let l:warnings = get(l:counts, 'warning', '')
+		let l:hints = get(l:counts, 'hint', '')
+		let l:information = get(l:counts, 'information', '')
+	elseif exists('*neomake#Make')
 		let l:counts = neomake#statusline#get_counts(bufnr('%'))
 		let l:errors = get(l:counts, 'E', '')
 		let l:warnings = get(l:counts, 'W', '')
@@ -254,6 +265,12 @@ function! badge#syntax() abort " {{{2
 	endif
 	if l:warnings > 0
 		let l:msg .= printf(' %d ', l:warnings)
+	endif
+	if l:hints > 0
+		let l:msg .= printf(' %d ', l:hints)
+	endif
+	if l:information > 0
+		let l:msg .= printf(' %d ', l:information)
 	endif
 	return substitute(l:msg, '\s*$', '', '')
 endfunction
