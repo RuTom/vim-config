@@ -29,6 +29,8 @@ let s:badge_mode_map = {
 	\ "\<C-s>": 'S-BLOCK', 't': 'TERMINAL'
 	\ }
 
+let s:badge_mode_seperator = '|'
+
 " Private variables
 let s:caches = []
 
@@ -290,19 +292,22 @@ endfunction
 function! badge#mode(...) abort " {{{2
 	" Returns vim mode
 	" Parameters:
-	"   1: Seperator between mode and spell, if present. default [none]
+	"   1: Seperator between mode and spell, if present. default '|'
+	"   2: Zoomed buffer symbol, default: Z
 	" Options:
 	"   g:badge_mode_map dictionary to match modes
 
-	if a:0 > 0 && &spell
-		let l:sep = a:1
-		let l:mode = get(exists('g:badge_mode_map')? g:badge_mode_map : s:badge_mode_map,
-			\ mode(), '')
-		return l:mode . ' ' . l:sep . ' ' . &spelllang
-	else
-		return get(exists('g:badge_mode_map') ? g:badge_mode_map : s:badge_mode_map,
-			\ mode(), '')
+	let l:mode = get(exists('g:badge_mode_map') ? g:badge_mode_map : s:badge_mode_map,
+		\ mode(), '')
+
+	let l:sep = a:0 > 0 ? a:1 : s:badge_mode_seperator
+	if &spell
+		let l:mode .= ' ' . l:sep . ' ' . &spelllang
 	endif
+	if exists('t:zoomed') && bufnr('%') == t:zoomed.nr
+		let l:mode .= ' ' . l:sep . ' ' . ( a:0 > 1 ? a:2 : 'Z' )
+	endif
+	return l:mode
 endfunction
 
 function! badge#highlightmode() abort " {{{2

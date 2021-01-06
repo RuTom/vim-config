@@ -6,7 +6,7 @@
 let s:stl  = ''
 let s:stl .= "%(%{badge#highlightmode()}%)"             " Change color for mode
 let s:stl .= "%#StatusLineMode#"                        " Color mode
-let s:stl .= "%( %{badge#mode('|')} %)"                 " Current mode
+let s:stl .= "%( %{badge#mode('|', '🔎')} %)"                 " Current mode
 let s:stl .= "%#StatusLine#"                            " Color
 let s:stl .= "%( %{&paste ? '=' : ''}%)"                " Paste symbol
 let s:stl .= "%( %{badge#filenamemod('', '+')} %)"     " Filename
@@ -37,8 +37,18 @@ let s:stl_nc .= '%(%{badge#filetype()} %)'              " File type
 let s:stl_nc .= '%( %2p%% %3l:%-2v %)'                  " Line and column
 
 " Status-line options {{{1
-let s:disable_statusline =
-	\ 'defx\|denite\|vista\|tagbar\|undotree\|diff\|peekaboo\|sidemenu'
+" Status-line blacklist
+let s:statusline_filetypes_ignore = get(g:, 'statusline_filetypes_ignore',
+	\ 'defx\|denite\|vista\|undotree\|diff\|sidemenu\|qf')
+
+let s:statusline_filetypes = get(g:, 'statusline_filetypes', {
+	\ 'defx': ['%{fnamemodify(getcwd(), ":t")}%=%l/%L'],
+	\ 'magit': [
+	\   '%y %{badge#gitstatus()}%<%=%{fnamemodify(badge#filename(), ":~")}%=%l/%L',
+	\   '%y %{badge#gitstatus()}%= %l/%L'],
+	\ 'minimap': [' '],
+	\ 'denite-filter': ['%#Normal#'],
+	\ })
 
 let g:badge_mode_map = {
 	\ 'n' : 'N',
@@ -57,34 +67,34 @@ let g:badge_mode_map = {
 
 let g:badge_nofile = '[No Name]'
 
-" active & inactive toggle functions {{{1
-function! s:active()
-	if &filetype ==# 'defx'
-		let &l:statusline = '%y %<%=%{badge#filename()}%= %l/%L'
-	elseif &filetype ==# 'magit'
-		let &l:statusline = '%y %{badge#gitstatus()}%<%=%{badge#filename()}%= %l/%L'
-	elseif &filetype !~# s:disable_statusline
-		let &l:statusline = s:stl
-	endif
-endfunction
-
-function! s:inactive()
-	if &filetype ==# 'defx'
-		let &l:statusline = '%y %= %l/%L'
-	elseif &filetype ==# 'magit'
-		let &l:statusline = '%y %{badge#gitstatus()}%= %l/%L'
-	elseif &filetype !~# s:disable_statusline
-		let &l:statusline = s:stl_nc
-	endif
-endfunction
-
 " Statusline (re)draw logic {{{1
+" s:set_state replaces current statusline
+function! s:set_state(filetype, index, default) abort " {{{2
+	" Skip statusline render during session loading
+	if &previewwindow || exists('g:SessionLoad') "|| empty(a:filetype)
+		return
+	endif
+	if has_key(s:statusline_filetypes, a:filetype)
+		let l:states = s:statusline_filetypes[a:filetype]
+		let l:want = get(l:states, a:index, l:states[0])
+		if &l:statusline != l:want
+			let &l:statusline = l:want
+		endif
+	elseif a:filetype !~# s:statusline_filetypes_ignore
+		if &l:statusline != a:default
+			let &l:statusline = a:default
+		endif
+	endif
+endfunction " }}}
+
+" Bind to Vim events
 augroup user_statusline
 	autocmd!
 
 	" Set active/inactive statusline templates
-	autocmd VimEnter,ColorScheme,FileType,WinEnter,BufWinEnter * call s:active()
-	autocmd WinLeave * call s:inactive()
+	autocmd VimEnter,ColorScheme, * let &l:statusline = s:stl
+	autocmd FileType,WinEnter,BufWinEnter * call s:set_state(&filetype, 0, s:stl)
+	autocmd WinLeave * call s:set_state(&filetype, 1, s:stl_nc)
 
 	" Redraw on Vim events
 	autocmd FileChangedShellPost,BufFilePost,BufNewFile,BufWritePost * redrawstatus
