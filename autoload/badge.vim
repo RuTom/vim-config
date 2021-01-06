@@ -4,14 +4,6 @@
 
 " Configuration {{{1
 
-" Limit display of directories in path
-let g:badge_tab_filename_max_dirs =
-	\ get(g:, 'badge_tab_filename_max_dirs', 1)
-
-" Limit display of characters in each directory in path
-let g:badge_tab_dir_max_chars =
-	\ get(g:, 'badge_tab_dir_max_chars', 5)
-
 " Maximum number of directories in filepath
 let g:badge_status_filename_max_dirs =
 	\ get(g:, 'badge_status_filename_max_dirs', 3)
@@ -25,18 +17,11 @@ let g:badge_filetype_blacklist =
 	\ get(g:, 'badge_filetype_blacklist',
 	\ 'qf\|help\|vimfiler\|gundo\|diff\|fugitive\|gitv')
 
-let g:badge_numeric_charset =
-	\ get(g:, 'badge_numeric_charset',
-	\ ['⁰','¹','²','³','⁴','⁵','⁶','⁷','⁸','⁹'])
-	"\ ['₀','₁','₂','₃','₄','₅','₆','₇','₈','₉'])
-
 let g:badge_loading_charset =
 	\ get(g:, 'badge_loading_charset',
 	\ ['⠃', '⠁', '⠉', '⠈', '⠐', '⠠', '⢠', '⣠', '⠄', '⠂'])
 
 let g:badge_nofile = get(g:, 'badge_nofile', 'N/A')
-
-let g:badge_project_separator = get(g:, 'badge_project_separator', '|')
 
 let s:badge_mode_map = {
 	\ 'n': 'NORMAL', 'i': 'INSERT', 'R': 'REPLACE', 'v': 'VISUAL', 'V': 'V-LINE',
@@ -152,18 +137,6 @@ function! badge#filename(...) abort " {{{2
 		let parts = split(short, '/')
 		if len(parts) > l:max
 			let parts = parts[-l:max-1 : ]
-		endif
-
-		" Set icon
-		let l:icon = ''
-		if exists('*nerdfont#find')
-			let l:icon = nerdfont#find(l:bufname)
-		elseif exists('*defx_icons#get')
-			let l:icon = get(defx_icons#get().icons.extensions, expand('%:e'), {})
-			let l:icon = get(l:icon, 'icon', '')
-		endif
-		if ! empty(l:icon)
-			let l:fn .= l:icon . '  '
 		endif
 
 		let l:fn .= join(parts, '/')
