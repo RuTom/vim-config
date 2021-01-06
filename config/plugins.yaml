@@ -162,7 +162,6 @@
   on_ft: terraform
   on_cmd: [ Terraform, TerraformFmt ]
 
-- { repo: gentoo/gentoo-syntax }
 # ==========================================
 # Commands
 # --------
