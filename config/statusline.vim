@@ -6,7 +6,7 @@
 let s:stl  = ''
 let s:stl .= "%(%{badge#highlightmode()}%)"             " Change color for mode
 let s:stl .= "%#StatusLineMode#"                        " Color mode
-let s:stl .= "%( %{badge#mode('|', '🔎')} %)"                 " Current mode
+let s:stl .= "%( %{badge#mode('|', '🔎')} %)"           " Current mode
 let s:stl .= "%#StatusLine#"                            " Color
 let s:stl .= "%( %{&paste ? '=' : ''}%)"                " Paste symbol
 let s:stl .= "%( %{badge#filenamemod('', '+')} %)"     " Filename
@@ -34,7 +34,7 @@ let s:stl_nc .= ' %{badge#filenamemod()} %)'            " Filename
 let s:stl_nc .= '%='                                    " Align to right
 
 let s:stl_nc .= '%(%{badge#filetype()} %)'              " File type
-let s:stl_nc .= '%( %2p%% %3l:%-2v %)'                  " Line and column
+let s:stl_nc .= '%( %2p%% %3l:%-2v %)'                 " Line and column
 
 " Status-line options {{{1
 " Status-line blacklist

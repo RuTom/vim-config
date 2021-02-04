@@ -93,7 +93,7 @@ if exists('&backupskip')
 	set backupskip+=.vault.vim
 endif
 
-" Disable swap/undo/viminfo/shada files in temp directories or shm
+" Disable swap/undo/viminfo files in temp directories or shm
 augroup user_secure
 	autocmd!
 	silent! autocmd BufNewFile,BufReadPre
@@ -144,11 +144,11 @@ endif
 if executable('rg')
 	set grepformat=%f:%l:%c:%m
 	let &grepprg =
-		\ 'rg --hidden --vimgrep' . (&smartcase ? ' --smart-case' : '') . ' --'
+		\ 'rg --vimgrep --no-heading' . (&smartcase ? ' --smart-case' : '') . ' --'
 elseif executable('ag')
 	set grepformat=%f:%l:%c:%m
 	let &grepprg =
-		\ 'ag --hidden --vimgrep' . (&smartcase ? ' --smart-case' : '') . ' --'
+		\ 'ag --vimgrep' . (&smartcase ? ' --smart-case' : '') . ' --'
 endif
 
 " Behavior {{{1
@@ -170,10 +170,15 @@ if has('patch-7.4.775')
 	set completeopt+=noselect,noinsert
 endif
 
-if has('patch-8.1.0360') || has('nvim-0.4')
+if has('patch-8.1.0360') || has('nvim-0.5')
 	set diffopt=internal,algorithm:patience
 	" set diffopt=indent-heuristic,algorithm:patience
 endif
+" Use the new Neovim :h jumplist-stack
+if has('nvim-0.5')
+	set jumpoptions=stack
+endif
+
 " Use the new Neovim :h jumplist-stack
 if has('nvim-0.5')
 	set jumpoptions=stack

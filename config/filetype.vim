@@ -1,5 +1,5 @@
 " File Types
-" ===
+" ---
 
 augroup user_plugin_filetype " {{{1
 	autocmd!
@@ -14,12 +14,12 @@ augroup user_plugin_filetype " {{{1
 	" 3. Preview window
 	" 4. Completion popup menu is visible
 	autocmd WinEnter,BufEnter,InsertLeave *
-		\ if ! &cursorline && &filetype !~# '^\(denite\|clap_\)'
+		\ if ! &cursorline && &filetype !~# '^\(denite\|clap_\|.*quickpick\)'
 		\      && ! &previewwindow && ! pumvisible()
 		\ | setlocal cursorline
 		\ | endif
 	autocmd WinLeave,BufLeave,InsertEnter *
-		\ if &cursorline && &filetype !~# '^\(denite\|clap_\)'
+		\ if &cursorline && &filetype !~# '^\(denite\|clap_\|.*quickpick\)'
 		\      && ! &previewwindow && ! pumvisible()
 		\ | setlocal nocursorline
 		\ | endif
@@ -79,8 +79,12 @@ augroup user_plugin_filetype " {{{1
 		\|   endif
 		\|   if foldclosed('.') != -1
 		\|     execute 'normal! zvzz'
+		\|   endif
 		\| endif
-		\| endif
+
+	autocmd FileType apache setlocal path+=./;/
+
+	autocmd FileType html setlocal path+=./;/
 
 	autocmd FileType apache setlocal path+=./;/
 

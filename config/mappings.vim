@@ -301,7 +301,7 @@ endfunction "}}}
 " -------------------------
 
 " Ultimatus Quitos
-autocmd user_events BufWinEnter,BufNew *
+autocmd user_events BufWinEnter,BufNew,BufNewFile *
 	\ if &buftype == '' && ! mapcheck('q', 'n')
 	\ |   nnoremap <silent><buffer> q :<C-u>quit<CR>
 	\ | endif
@@ -360,6 +360,19 @@ function! s:window_empty_buffer() "{{{2
 	if ! getbufvar(l:current, '&modified')
 		enew
 		silent! execute 'bdelete '.l:current
+	endif
+endfunction
+
+" Simple zoom toggle
+function! s:zoom()
+	if exists('t:zoomed')
+		unlet t:zoomed
+		wincmd =
+	else
+		let t:zoomed = { 'nr': bufnr('%') }
+		vertical resize
+		resize
+		normal! ze
 	endif
 endfunction
 " }}}

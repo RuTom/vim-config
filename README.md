@@ -2,7 +2,7 @@
 
 Lean mean Neo/vim machine, 30-45ms startup time.
 
-Best with [Neovim] or [Vim8] and `python3` enabled.
+Best with [Neovim] 0.5.x or [Vim] 8.x and `python3` enabled.
 
 > I encourage you to fork this repo and create your own experience.
 > Learn how to tweak and change Neo/vim to the way YOU like it.
@@ -396,7 +396,6 @@ _Note_ that 95% of the plugins are **[lazy-loaded]**.
 | [rhysd/committia.vim] | Pleasant editing on Git commit messages
 | [junegunn/goyo] | Distraction-free writing
 | [junegunn/limelight] | Hyperfocus-writing
-| [itchyny/calendar.vim] | Calendar application
 | [deris/vim-shot-f] | Highlight characters to move directly with f/t/F/T
 | [norcalli/nvim-colorizer.lua] | The fastest Neovim colorizer
 
@@ -555,7 +554,6 @@ _Note_ that 95% of the plugins are **[lazy-loaded]**.
 [rhysd/committia.vim]: https://github.com/rhysd/committia.vim
 [junegunn/goyo]: https://github.com/junegunn/goyo.vim
 [junegunn/limelight]: https://github.com/junegunn/limelight.vim
-[itchyny/calendar.vim]: https://github.com/itchyny/calendar.vim
 [deris/vim-shot-f]: https://github.com/deris/vim-shot-f
 [norcalli/nvim-colorizer.lua]: https://github.com/norcalli/nvim-colorizer.lua
 
