@@ -86,10 +86,6 @@ augroup user_plugin_filetype " {{{1
 
 	autocmd FileType html setlocal path+=./;/
 
-	autocmd FileType apache setlocal path+=./;/
-
-	autocmd FileType html setlocal path+=./;/
-
 	autocmd FileType crontab setlocal nobackup nowritebackup
 
 	autocmd FileType yaml.docker-compose setlocal expandtab

@@ -89,7 +89,7 @@ endif
 
 " Secure sensitive information, disable backup files in temp directories
 if exists('&backupskip')
-	set backupskip+=/tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*,/private/*
+	set backupskip+=/tmp/*,/var/tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*,/private/*
 	set backupskip+=.vault.vim
 endif
 
@@ -174,10 +174,6 @@ if has('patch-8.1.0360') || has('nvim-0.5')
 	set diffopt=internal,algorithm:patience
 	" set diffopt=indent-heuristic,algorithm:patience
 endif
-" Use the new Neovim :h jumplist-stack
-if has('nvim-0.5')
-	set jumpoptions=stack
-endif
 
 " Use the new Neovim :h jumplist-stack
 if has('nvim-0.5')
@@ -209,7 +205,7 @@ set cmdheight=2         " Height of the command line
 set cmdwinheight=5      " Command-line lines
 set noequalalways       " Don't resize windows on split or close
 set laststatus=2        " Always show a status line
-set colorcolumn=+1      " Column highlight at textwidth's max character-limit
+set colorcolumn=+0      " Column highlight at textwidth's max character-limit
 set display=lastline
 
 if has('folding') && has('vim_starting')
